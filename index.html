@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="In every one of ten major book markets, more people bought a printed book than an e-book in 2020. An interactive data story by Abhinav KR.">
+<meta name="author" content="Abhinav KR">
+<meta property="og:title" content="E-books still no match for printed books">
+<meta property="og:description" content="In every one of ten major book markets, more people bought a printed book than an e-book in 2020. An interactive data story by Abhinav KR.">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23f4775f'/%3E%3Cpath d='M16 2a14 14 0 0 1 0 28z' fill='%23ffd27a'/%3E%3Cpath d='M16 9a6 7 0 0 1 0 14z' fill='%2394502c'/%3E%3C/svg%3E">
+<title>Print Still Wins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 700px reading column, 1080px figure column, sticky masthead with reading progress.
+   Color: one family drawn from the sliced-fruit chart. Cyan-blue = printed books, green = e-books. Validated for CVD + contrast in both themes. */
+:root{
+  --bg:#F4F6F8; --surface:#FFFFFF; --ink:#0F1B26; --ink-2:#44525F; --ink-3:#6B7884;
+  --rule:#DCE2E7; --grid:#E6EBEF; --hl:#EEF4F8;
+  --print:#1479AE; --ebook:#2A9D4E; --accent:#0F5F8A;
+  --print-tint:#E2EFF7; --ebook-tint:#E3F3E8;
+  --stage:#FFFFFF; --stage-rule:#E3E9ED;
+  --f-display:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B1218; --surface:#121C24; --ink:#E7EDF2; --ink-2:#A8B5BF; --ink-3:#7F8C97;
+  --rule:#22303B; --grid:#1C2832; --hl:#172533;
+  --print:#3F9BD1; --ebook:#35A757; --accent:#7CC0E8;
+  --print-tint:#132838; --ebook-tint:#122A1C;
+  --stage:#F5F8FA; --stage-rule:#22303B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1218; --surface:#121C24; --ink:#E7EDF2; --ink-2:#A8B5BF; --ink-3:#7F8C97;
+  --rule:#22303B; --grid:#1C2832; --hl:#172533;
+  --print:#3F9BD1; --ebook:#35A757; --accent:#7CC0E8;
+  --print-tint:#132838; --ebook-tint:#122A1C;
+  --stage:#F5F8FA; --stage-rule:#22303B; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--f-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+/* Spacing scale (8px grid): 8 · 16 · 24 · 32 · 48 · 64 · 96. Every vertical gap below uses one of these. */
+:root{--s1:8px;--s2:16px;--s3:24px;--s4:32px;--s6:48px;--s8:64px;--s12:96px;--fig-pad:32px}
+@media (max-width:560px){:root{--fig-pad:16px}}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.col{max-width:700px;margin-inline:auto}
+.wide{max-width:1080px;margin-inline:auto}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+/* masthead */
+.mast{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--surface);border-bottom:1px solid var(--rule)}
+.mast .wide{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
+.brand{display:flex;align-items:center;gap:10px;font:600 12px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
+.brand i{width:14px;height:14px;border-radius:50%;background:linear-gradient(90deg,var(--print) 50%,var(--surface) 50%);box-shadow:inset 0 0 0 1.5px var(--print);position:relative;flex:none}
+.brand i::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:6px;margin-top:-3px;border-radius:0 6px 6px 0;background:var(--ebook)}
+.brand span{color:var(--ink-3);font-weight:400}
+.mast nav{display:flex;gap:4px;font-size:13px}
+.mast nav a{color:var(--ink-2);text-decoration:none;padding:6px 10px;border-radius:6px}
+.mast nav a:hover{color:var(--ink);background:var(--hl)}
+.progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--print);transform-origin:0 50%;transform:scaleX(0)}
+@media (max-width:720px){.mast nav{display:none}}
+
+/* hero */
+header.hero{padding-block:72px 36px}
+.kicker{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font:500 11.5px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.kicker .tag{color:var(--accent);background:var(--print-tint);padding:6px 9px;border-radius:999px;letter-spacing:.1em}
+h1{font:700 clamp(38px,6.4vw,64px)/1.03 var(--f-display);letter-spacing:-.025em;margin:22px 0 20px;text-wrap:balance}
+h1 em{font-style:italic;font-weight:400;color:var(--print)}
+.dek{font:400 clamp(18px,2.3vw,22px)/1.5 var(--f-display);color:var(--ink-2);margin:0;text-wrap:pretty}
+.meta{margin-top:30px;padding-top:16px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 28px;font-size:13px;color:var(--ink-3)}
+.meta strong{color:var(--ink);font-weight:500}
+
+/* headline numbers */
+.headline{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);border-radius:14px;overflow:hidden;background:var(--surface);margin-top:8px}
+.hl-cell{padding:28px 28px 26px;min-width:0}
+.hl-cell + .hl-cell{border-left:1px solid var(--rule)}
+.hl-label{display:flex;align-items:center;gap:8px;font:500 11.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.sw{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.sw.p{background:var(--print)} .sw.e{background:var(--surface);box-shadow:inset 0 0 0 2.5px var(--ebook)}
+.hl-num{font:600 clamp(52px,9vw,88px)/1 var(--f-display);letter-spacing:-.035em;margin:18px 0 6px;font-variant-numeric:tabular-nums}
+.hl-num.p{color:var(--print)} .hl-num.e{color:var(--ebook)}
+.hl-sub{font-size:14px;color:var(--ink-2);margin:0}
+.people{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;margin-top:22px;max-width:270px}
+.people i{aspect-ratio:1;border-radius:50%;background:var(--grid)}
+.people.p i.on{background:var(--print)} .people.e i.on{background:var(--ebook)}
+/* footer columns line up exactly with the two cells above: same 28px inset, 57px = 2×28 + 1px divider */
+.hl-foot{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;column-gap:57px;row-gap:4px;padding:12px 28px;border-top:1px solid var(--rule);background:var(--bg);font-size:12.5px;line-height:1.5;color:var(--ink-3)}
+@media (max-width:560px){.hl-foot{grid-template-columns:1fr}}
+.hl-foot b{color:var(--ink);font-weight:600}
+@media (max-width:560px){.headline{grid-template-columns:1fr}.hl-cell + .hl-cell{border-left:0;border-top:1px solid var(--rule)}.hl-cell,.hl-foot{padding-inline:20px}}
+
+/* prose */
+article{padding-block:8px}
+article p{margin:0 0 20px;font-size:17.5px;line-height:1.72;color:var(--ink)}
+article p strong{font-weight:600}
+.section-head{margin:var(--s8) 0 var(--s3)}
+section[aria-label="Headline comparison"]{margin-bottom:var(--s6)}
+article{padding-block:0}
+article > p:last-child{margin-bottom:0}
+.wrap > article + figure,.wrap > figure + article{margin-top:var(--s6)}
+.sec-tag{display:flex;align-items:center;gap:10px;font:500 11.5px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.sec-tag::after{content:"";flex:1;height:1px;background:var(--rule)}
+h2{font:700 clamp(27px,3.4vw,38px)/1.14 var(--f-display);letter-spacing:-.018em;margin:14px 0 0;text-wrap:balance;scroll-margin-top:96px}
+.pull{margin:44px 0;padding:6px 0 6px 26px;border-left:3px solid var(--ebook);font:400 clamp(22px,3vw,28px)/1.36 var(--f-display);color:var(--ink);text-wrap:balance}
+.pull cite{display:block;margin-top:12px;font:400 13px/1.4 var(--f-body);font-style:normal;color:var(--ink-3)}
+
+/* figures */
+figure{margin:var(--s6) auto;background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:var(--fig-pad) var(--fig-pad) var(--s2);box-shadow:0 1px 2px rgba(15,27,38,.04)}
+.fig-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3);margin:0 0 var(--s3);padding:var(--s2) 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.fig-tools .legend{margin:0}
+.tool{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tool-label{font:500 10.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.fig-tools .tool:first-child:not(:only-child){margin-right:auto}
+@media (max-width:560px){figure{border-radius:12px}}
+.fig-head{margin-bottom:var(--s3)}
+.fig-head > div{min-width:0;max-width:720px}
+.fig-sub{text-wrap:pretty}
+.fig-no{font:500 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.fig-title{font:600 21px/1.28 var(--f-display);margin:9px 0 5px;text-wrap:balance;color:var(--ink)}
+.fig-sub{font-size:14px;line-height:1.55;color:var(--ink-2);margin:0}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:9px;padding:3px;background:var(--bg)}
+.seg button{font:500 12.5px/1 var(--f-body);color:var(--ink-2);background:none;border:0;padding:8px 12px;border-radius:6px;cursor:pointer}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(15,27,38,.12)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--ink-2);margin-bottom:6px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend .gapkey{display:inline-block;width:22px;height:4px;border-radius:2px;background:var(--grid)}
+.legend .avgkey{display:inline-block;width:18px;border-top:1.5px dashed var(--ink-3)}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.fig-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;margin-top:14px;padding-top:12px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3)}
+.linkbtn{font:500 12.5px var(--f-body);color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.fig-foot .actions{display:inline-flex;flex-wrap:wrap;gap:16px}
+.fig-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.stage[data-style="orange"] .fruit .vals .p{color:#9A4A05}
+.stage[data-style="orange"] .fruit .vals .e{color:#3E7A16}
+.stage[data-style="orange"] .sw-c{background:radial-gradient(circle at 35% 35%,#ffc27a,#f38f1f 60%,#b85c05)}
+.stage[data-style="orange"] .sw-g{width:9px;height:9px;background:radial-gradient(circle at 40% 40%,#e3f5b0,#8fcc3a 70%,#3f7f1a)}
+.stage[data-style="orange"] .sw-core{width:20px;height:20px;border-radius:0 20px 20px 0;box-shadow:none;background:radial-gradient(circle at 20% 45%,#e3f5b0 0,#b5e05e 45%,#74bb2c 80%,#3f7f1a 100%)}
+.lbl{fill:var(--ink);font-size:12.5px;font-weight:500;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.lbl.top{font-weight:600}
+.leader{stroke:var(--ink-3);stroke-width:1;opacity:.6}
+.ray{fill:none;stroke:var(--ink-3);stroke-width:1;opacity:.55}
+.ray.parity{stroke:var(--ink-2);stroke-width:1.5;opacity:.9}
+.ray-l{fill:var(--ink-3);font-size:11px;font-family:var(--f-mono)}
+.pt{transition:r .15s}
+.pt.on{stroke:var(--ink)}
+@media (max-width:640px){.fig-head .seg{flex-wrap:wrap}}
+
+svg text{font-family:var(--f-body)}
+.ax{fill:var(--ink-3);font-size:11px;font-family:var(--f-mono)}
+.cn{fill:var(--ink);font-size:13.5px;font-weight:500}
+.rk{fill:var(--ink-3);font-size:11px;font-family:var(--f-mono)}
+.vl{fill:var(--ink-2);font-size:12px;font-family:var(--f-mono)}
+.gl{fill:var(--ink);font-size:12px;font-family:var(--f-mono);font-weight:500}
+.avl{fill:var(--ink-3);font-size:10.5px;font-family:var(--f-mono)}
+.row-bg{fill:transparent}
+.row.hl .row-bg{fill:var(--hl)}
+.hit{fill:transparent}
+
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:9px;padding:11px 13px;font-size:12.5px;line-height:1.55;min-width:196px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;z-index:3}
+.tip.on{opacity:1;transform:none}
+.tip b{display:block;font-size:13.5px;margin-bottom:5px}
+.tip .r{display:flex;justify-content:space-between;gap:18px;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.tip .r span:first-child{opacity:.75;font-family:var(--f-body)}
+
+/* sliced fruit stage: the original's white stage in both themes, so its shading reads as designed */
+.stage{--ink:#0F1B26;--ink-2:#44525F;--ink-3:#6B7884;--hl:#F0F6F8;--bg:#FFFFFF;background:var(--stage);color:var(--ink);border-radius:12px;border:1px solid var(--stage-rule);padding:20px 12px 10px}
+.fruit-key{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;font-size:13px;color:var(--ink-2);margin:0 8px 18px}
+.fruit-key > div{display:flex;align-items:center;gap:10px;max-width:300px}
+.fruit-key svg{width:40px;height:40px;flex:none}
+.sw-core{width:14px;height:22px;flex:none;border-radius:0 14px 14px 0/0 11px 11px 0;background:radial-gradient(circle at 20% 40%,#c47a4a 0,#94502c 55%,#66301a 100%);box-shadow:0 0 0 3px rgba(234,100,70,.35)}
+.fruits{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px 12px;position:relative}
+@media (max-width:860px){.fruits{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.fruits{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fruit{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;border-radius:10px;padding:10px 4px 8px;outline:none}
+.fruit:hover,.fruit:focus-visible{background:var(--hl)}
+.fruit:focus-visible{box-shadow:inset 0 0 0 2px #0F5F8A}
+.fruit svg{width:100%;max-width:150px;height:auto;display:block}
+.fruit .vals{display:flex;gap:10px;font:500 12.5px/1 var(--f-mono);font-variant-numeric:tabular-nums}
+.fruit .vals span{display:inline-flex;align-items:center;gap:5px}
+.fruit .vals .p{color:#B23A30} .fruit .vals .e{color:#7A3E1C}
+.sw-c{width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 70% 25%,#e9505a,#f4775f 45%,#ffc97a)}
+.sw-g{width:8px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#c47a4a,#94502c 60%,#66301a)}
+.fruit .nm{font-size:13.5px;font-weight:500;color:var(--ink);text-align:center}
+.fruit .nm b{font:400 11px var(--f-mono);color:var(--ink-3);margin-right:6px}
+.stage .tip{background:#0F1B26;color:#FFFFFF}
+
+/* table */
+.tbl-wrap{overflow-x:auto;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;min-width:540px}
+th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--rule)}
+th:nth-child(-n+2),td:nth-child(-n+2){text-align:left}
+th{font:500 11px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+tbody tr:hover{background:var(--hl)}
+tfoot td{font-weight:600;border-bottom:0}
+
+/* outlook */
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:28px 0 8px;border:1px solid var(--rule);border-radius:12px;background:var(--surface);overflow:hidden}
+.tile{padding:20px 20px 18px;min-width:0}
+.tile + .tile{border-left:1px solid var(--rule)}
+.tile .n{font:600 clamp(30px,4vw,40px)/1 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.tile .l{font-size:13.5px;line-height:1.5;color:var(--ink-2);margin-top:10px}
+.tile .s{font:400 11px/1.3 var(--f-mono);color:var(--ink-3);margin-top:8px;letter-spacing:.04em;text-transform:uppercase}
+@media (max-width:560px){.tiles{grid-template-columns:1fr}.tile + .tile{border-left:0;border-top:1px solid var(--rule)}}
+
+/* takeaways */
+.takeaways{list-style:none;padding:0;margin:22px 0 0;border-top:1px solid var(--ink)}
+.takeaways li{display:grid;grid-template-columns:132px 1fr;gap:22px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.takeaways .k{font:600 27px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.takeaways .k small{display:block;font:400 11px/1.3 var(--f-mono);color:var(--ink-3);letter-spacing:.06em;margin-top:8px;text-transform:uppercase}
+.takeaways p{margin:0;font-size:16px;line-height:1.6;color:var(--ink-2)}
+.takeaways p strong{color:var(--ink);font-weight:600}
+@media (max-width:480px){.takeaways li{grid-template-columns:1fr;gap:8px}}
+
+/* method + footer */
+.method{margin-top:88px;padding-block:40px 28px;border-top:1px solid var(--rule);background:var(--surface)}
+.method h3{font:500 11.5px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}
+.method-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px}
+.method-grid > div{min-width:0}
+.method p,.method li{font-size:14px;color:var(--ink-2);margin:0 0 10px;line-height:1.6}
+.method ul{padding-left:18px;margin:0}
+.colophon{margin-top:32px;padding-top:16px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;font-size:12.5px;color:var(--ink-3)}
+@media (max-width:780px){.method-grid{grid-template-columns:1fr;gap:26px}}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none !important;animation:none !important}}
+
+/* ===== Website layout: one 1120px container shared by every element ===== */
+.container{max-width:1120px;margin-inline:auto}
+.mast-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px}
+.band{padding-block:var(--s12);border-top:1px solid var(--rule)}
+.band.alt{background:var(--surface)}
+.hero-band{border-top:0;padding-block:var(--s12)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s8);align-items:center}
+.hero-copy h1{margin-top:var(--s3)}
+.hero-copy .meta{margin-top:var(--s4)}
+/* headline card stacks its two figures in the hero's right column */
+.headline{grid-template-columns:1fr;margin:0;background:var(--bg)}
+.hero-band .headline{background:var(--bg)}
+.hl-cell{padding:var(--s3) var(--s4)}
+.hl-cell + .hl-cell{border-left:0;border-top:1px solid var(--rule)}
+.hl-row{display:flex;align-items:baseline;gap:var(--s2);flex-wrap:wrap;margin:var(--s2) 0 0}
+.hl-num{font-size:clamp(44px,5vw,60px);margin:0}
+.hl-sub{max-width:16ch;line-height:1.4}
+.people{margin-top:var(--s2);max-width:none;grid-template-columns:repeat(25,1fr)}
+.hl-foot{grid-template-columns:1fr;padding:12px var(--s4);background:var(--surface)}
+/* section header: title left (5 cols), copy right (7 cols); figures span the full container below */
+.sec-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:var(--s8);row-gap:var(--s3);align-items:start}
+.sec-title h2{margin-top:var(--s2)}
+.sec-tag::after{display:none}
+.prose{max-width:680px}
+.prose p{margin:0 0 20px;font-size:17.5px;line-height:1.72;color:var(--ink)}
+.prose p:last-child{margin-bottom:0}
+.prose p strong{font-weight:600}
+.prose .pull{margin:var(--s4) 0 0}
+.nw{white-space:nowrap}
+.band figure{max-width:none;margin:var(--s6) 0 0}
+.band.alt figure{background:var(--surface)}
+.bridge{margin-top:var(--s6)}
+.tiles{margin:var(--s6) 0 0}
+.tile{padding:var(--s3)}
+.tile .s{margin:0 0 var(--s2)}
+.tile .l{margin-top:var(--s1)}
+.takeaways{margin:0;border-top:1px solid var(--ink)}
+.method{margin-top:0;padding-block:var(--s8) var(--s4)}
+@media (max-width:900px){
+  .hero-grid,.sec-grid{grid-template-columns:1fr;row-gap:var(--s3)}
+  .bridge > div:first-child{display:none}
+  .band{padding-block:var(--s8)}
+}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="mast wrap">
+  <div class="container mast-inner">
+    <div class="brand"><i aria-hidden="true"></i>Reading Habits <span>/ Data Story</span></div>
+    <nav aria-label="Sections">
+      <a href="#gap">The gap</a><a href="#ratio">Who's switching</a><a href="#why">Why print holds</a><a href="#outlook">Outlook</a><a href="#method">Method</a>
+    </nav>
+  </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+</div>
+
+<header class="band alt hero-band wrap">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="kicker"><span class="tag">Consumer behavior</span><span>10 markets</span><span>·</span><span>2020 survey</span><span>·</span><span>6 min read</span></div>
+      <h1>E-books still no match for <em>printed</em> books</h1>
+      <p class="dek">In every one of ten major book markets, more people bought a printed book than an e-book in 2020. The gap is widest in Western Europe and narrowest in East Asia.</p>
+      <div class="meta">
+        <span>Analysis and design by <strong>Abhinav KR</strong></span>
+        <span>Data: <strong>Statista</strong></span>
+        <span>Measure: share of population who bought at least one book</span>
+      </div>
+    </div>
+    <div class="headline" aria-label="Headline comparison">
+      <div class="hl-cell">
+        <div class="hl-label"><span class="sw p"></span>Printed books</div>
+        <div class="hl-row"><div class="hl-num p" data-v="42.5">42.5%</div><p class="hl-sub">bought at least one printed book</p></div>
+        <div class="people p" id="pplP" aria-hidden="true"></div>
+      </div>
+      <div class="hl-cell">
+        <div class="hl-label"><span class="sw e"></span>E-books</div>
+        <div class="hl-row"><div class="hl-num e" data-v="15.5">15.5%</div><p class="hl-sub">bought at least one e-book</p></div>
+        <div class="people e" id="pplE" aria-hidden="true"></div>
+      </div>
+      <div class="hl-foot"><span>Print buyers outnumber e-book buyers <b>2.7 to 1</b>.</span><span>Simple average of ten markets. Each grid is 100 people.</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="band wrap" aria-labelledby="gap">
+  <div class="container">
+    <div class="sec-grid">
+      <div class="sec-title"><div class="sec-tag">01 · The gap</div><h2 id="gap">Print leads everywhere, by very different margins</h2></div>
+      <div class="prose">
+        <p>The e-reader was supposed to replace the paperback. More than a decade after its launch, it has not. In all ten markets surveyed, more people bought a printed book than an e-book.</p>
+        <p>The size of that lead varies a lot. In Germany, <strong>58%</strong> of people bought a printed book and only <strong>10.4%</strong> bought an e-book, a gap of nearly 48 percentage points. In China, the gap is under 8 points.</p>
+      </div>
+    </div>
+
+    <figure aria-labelledby="f1t">
+      <div class="fig-head">
+        <div>
+          <div class="fig-no">Figure 1</div>
+          <div class="fig-title" id="f1t">Ten markets, sliced like a peach</div>
+          <p class="fig-sub" id="f1s">Each peach is one country. The skin is the share who bought a printed book; the stone is the share who bought an e-book.</p>
+        </div>
+      </div>
+      <div class="fig-tools">
+        <div class="tool">
+          <span class="tool-label" id="lbl-style">Style</span>
+          <div class="seg" role="group" aria-labelledby="lbl-style">
+            <button type="button" id="fs-peach" data-fstyle="peach" aria-pressed="true">Peach</button>
+            <button type="button" id="fs-orange" data-fstyle="orange" aria-pressed="false">Orange</button>
+          </div>
+        </div>
+        <div class="tool">
+          <span class="tool-label" id="lbl-forder">Order by</span>
+          <div class="seg" role="group" aria-labelledby="lbl-forder">
+            <button type="button" id="f-gap" data-fsort="gap" aria-pressed="true">Print lead</button>
+            <button type="button" id="f-print" data-fsort="print" aria-pressed="false">Print</button>
+            <button type="button" id="f-ebook" data-fsort="ebook" aria-pressed="false">E-book</button>
+            <button type="button" id="f-ratio" data-fsort="ratio" aria-pressed="false">Closest to parity</button>
+          </div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="fruit-key" aria-hidden="true">
+          <div><svg id="keyFruit" viewBox="0 -10 200 206"></svg><span id="k1">Peach size shows print share. The blushing skin is the print buyers.</span></div>
+          <div><span class="sw-core"></span><span id="k2">The stone shows e-book share, on the same scale.</span></div>
+        </div>
+        <div class="fruits" id="fruits"><div class="tip" id="tip0"></div></div>
+      </div>
+      <div class="fig-foot">
+        <span>Chart design: Abhinav KR. Sizes scale with share by area. Hover or tap a fruit for exact figures.</span>
+        <button type="button" class="linkbtn replay" data-replay="fruits">Replay animation</button>
+      </div>
+    </figure>
+
+    <div class="sec-grid bridge">
+      <div></div>
+      <div class="prose"><p>The fruits show the pattern at a glance: big skins, small cores. For an exact comparison, the dot plot below puts both shares on one axis.</p></div>
+    </div>
+
+    <figure aria-labelledby="f2t">
+      <div class="fig-head">
+        <div>
+          <div class="fig-no">Figure 2</div>
+          <div class="fig-title" id="f2t">Share of population buying each format, 2020</div>
+          <p class="fig-sub">The bar between the dots is the print lead, in percentage points.</p>
+        </div>
+      </div>
+      <div class="fig-tools">
+        <div class="legend">
+          <span><span class="sw p"></span>Printed books</span>
+          <span><span class="sw e"></span>E-books</span>
+          <span><span class="gapkey"></span>Print lead</span>
+          <span><span class="avgkey"></span>Ten-market average</span>
+        </div>
+        <div class="tool">
+          <span class="tool-label" id="lbl-sort">Sort by</span>
+          <div class="seg" role="group" aria-labelledby="lbl-sort">
+            <button type="button" id="s-gap" data-sort="gap" aria-pressed="true">Print lead</button>
+            <button type="button" id="s-print" data-sort="print" aria-pressed="false">Print</button>
+            <button type="button" id="s-ebook" data-sort="ebook" aria-pressed="false">E-book</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart" id="dumb"><div class="tip" id="tip1"></div></div>
+      <div class="tbl-wrap" id="tbl" hidden></div>
+      <div class="fig-foot">
+        <span>Source: Statista, 2020 consumer survey.</span>
+        <span class="actions"><button type="button" class="linkbtn replay" data-replay="dumb">Replay animation</button><button type="button" class="linkbtn" id="tblBtn" aria-expanded="false">Show data table</button></span>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="band alt wrap" aria-labelledby="ratio">
+  <div class="container">
+    <div class="sec-grid">
+      <div class="sec-title"><div class="sec-tag">02 · Who's switching</div><h2 id="ratio">China and the US come closest to parity</h2></div>
+      <div class="prose">
+        <p>Percentage-point gaps hide one thing: markets where fewer people buy books will always show smaller gaps. India's gap looks modest only because few people there buy books in either format.</p>
+        <p>A fairer comparison is how many e-book buyers there are for every ten print buyers. On that measure, China stands apart at nearly eight. The United States and South Korea follow at about five. France and Germany sit below two.</p>
+      </div>
+    </div>
+
+    <figure aria-labelledby="f3t">
+      <div class="fig-head">
+        <div>
+          <div class="fig-no">Figure 3</div>
+          <div class="fig-title" id="f3t">E-book buyers for every 10 print buyers</div>
+          <p class="fig-sub">Parity would be 10. No market gets past 8.</p>
+        </div>
+      </div>
+      <div class="chart" id="ratioChart"><div class="tip" id="tip2"></div></div>
+      <div class="fig-foot"><span>E-book share ÷ print share × 10. Dashed line: ten-market average.</span><button type="button" class="linkbtn replay" data-replay="ratio">Replay animation</button></div>
+    </figure>
+
+    <div class="sec-grid bridge">
+      <div></div>
+      <div class="prose"><p>Plotting both shares together shows how far each market sits from parity. Every line from the corner marks a fixed ratio. The steeper a market's position, the closer its e-book buyers come to matching its print buyers.</p></div>
+    </div>
+
+    <figure aria-labelledby="f4t">
+      <div class="fig-head">
+        <div>
+          <div class="fig-no">Figure 4</div>
+          <div class="fig-title" id="f4t">Distance from parity</div>
+          <p class="fig-sub">Print share across, e-book share up. Markets above the 5-per-10 line have at least half as many e-book buyers as print buyers.</p>
+        </div>
+      </div>
+      <div class="chart" id="scatter"><div class="tip" id="tip3"></div></div>
+      <div class="fig-foot"><span>Reference lines: e-book buyers per 10 print buyers. Hover anywhere to find the nearest market.</span><button type="button" class="linkbtn replay" data-replay="scatter">Replay animation</button></div>
+    </figure>
+  </div>
+</section>
+
+<section class="band wrap" aria-labelledby="why">
+  <div class="container">
+    <div class="sec-grid">
+      <div class="sec-title"><div class="sec-tag">03 · Why print holds</div><h2 id="why">Readers still want the feel of paper</h2></div>
+      <div class="prose">
+        <p>There are several explanations for print's staying power. One study suggests readers retain information better from a printed page than from a screen. Consumer surveys also find that e-books have not reproduced the physical experience of a book: the weight, the paper, and the sense of progress as pages build up on one side.</p>
+        <p>Researchers call this <em>haptic dissonance</em>. When a new product removes a sensory cue that people value, they hold back from adopting it, even when it is cheaper or more convenient. Gerlach and Buxmann documented this effect in e-book adoption in 2011.</p>
+        <blockquote class="pull">China had the highest share of <span class="nw">e-book</span> buyers, at 24.4%. That is almost 9 points above the ten-market average.<cite>Ten-market average <span class="nw">e-book</span> share: 15.5%</cite></blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band alt wrap" aria-labelledby="outlook">
+  <div class="container">
+    <div class="sec-grid">
+      <div class="sec-title"><div class="sec-tag">04 · Outlook</div><h2 id="outlook">The digital market is still growing</h2></div>
+      <div class="prose"><p>E-books are unlikely to replace print, but they do not need to. The digital book market is still expected to grow, even as print keeps its lead in every market surveyed.</p></div>
+    </div>
+    <div class="tiles">
+      <div class="tile"><div class="s">By 2025</div><div class="n">$18.4B</div><div class="l">Projected global e-book revenue</div></div>
+      <div class="tile"><div class="s">By 2025</div><div class="n">1.2B</div><div class="l">Projected e-book readers worldwide</div></div>
+      <div class="tile"><div class="s">In 2020</div><div class="n">0 of 10</div><div class="l">Markets where e-book buyers outnumber print buyers</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band wrap" aria-labelledby="takeaways">
+  <div class="container">
+    <div class="sec-grid">
+      <div class="sec-title"><div class="sec-tag">Summary</div><h2 id="takeaways">Key takeaways</h2></div>
+      <ul class="takeaways">
+        <li><div class="k">10 of 10<small>markets</small></div><p><strong>Print leads in every market surveyed.</strong> No market is close to an e-book majority.</p></li>
+        <li><div class="k">47.6 pts<small>Germany</small></div><p><strong>Western Europe is print's stronghold.</strong> Germany has the widest lead, followed by France at 44.6 points.</p></li>
+        <li><div class="k">7.6<small>China, per 10</small></div><p><strong>China is nearest to parity,</strong> with almost eight e-book buyers for every ten print buyers.</p></li>
+        <li><div class="k">24.5%<small>India, print</small></div><p><strong>India's small gap reflects low book buying overall,</strong> not a shift to e-books.</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="method band alt wrap" id="method">
+  <div class="container">
+    <div class="method-grid">
+      <div>
+        <h3>Data</h3>
+        <p>Estimated share of the population in each country who bought at least one printed book, and at least one e-book, in 2020. Source: Statista.</p>
+        <p>Averages are simple means of the ten markets, not weighted by population.</p>
+      </div>
+      <div>
+        <h3>Calculations</h3>
+        <ul>
+          <li><b>Print lead</b> = print share − e-book share, in percentage points.</li>
+          <li><b>E-book buyers per 10 print buyers</b> = e-book share ÷ print share × 10.</li>
+          <li>Rankings follow print lead, largest first.</li>
+          <li>In Figure 1, peach and stone sizes scale with share (by area) on one common scale.</li>
+          <li>In Figure 4, each reference line is a fixed ratio of e-book to print buyers.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>References</h3>
+        <p>Gerlach, J. and Buxmann, P. (2011). "Investigating the acceptance of electronic books: the impact of haptic dissonance on innovation adoption." <i>ECIS 2011 Proceedings</i>, 141. <a href="https://aisel.aisnet.org/ecis2011/141" target="_blank" rel="noopener">aisel.aisnet.org/ecis2011/141</a></p>
+        <p>Original visualization by Abhinav KR on <a href="https://public.tableau.com/app/profile/kishorerabhinav/viz/E-BooksStillNoMatchforPrintedBooks/E-BooksStillNoMatchforPrintedBooks" target="_blank" rel="noopener">Tableau Public</a>.</p>
+      </div>
+    </div>
+    <div class="colophon"><span>Reading Habits · Data Story</span><span>Charts built with D3. Colors checked for color-vision deficiency and contrast.</span></div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(function(){
+const DATA=[
+ {c:"Germany",print:58.0,ebook:10.4},{c:"France",print:52.1,ebook:7.5},{c:"Spain",print:49.3,ebook:14.3},
+ {c:"United Kingdom",print:48.7,ebook:20.0},{c:"Australia",print:41.2,ebook:15.9},{c:"Japan",print:40.1,ebook:17.3},
+ {c:"United States",print:44.5,ebook:22.7},{c:"India",print:24.5,ebook:5.6},{c:"South Korea",print:34.6,ebook:16.8},
+ {c:"China",print:32.0,ebook:24.4}
+];
+DATA.forEach(d=>{d.gap=+(d.print-d.ebook).toFixed(1);d.ratio=d.ebook/d.print*10});
+[...DATA].sort((a,b)=>b.gap-a.gap).forEach((d,i)=>d.rank=i+1);
+const avgP=d3.mean(DATA,d=>d.print),avgE=d3.mean(DATA,d=>d.ebook),avgR=d3.mean(DATA,d=>d.ratio);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const short=(c,n)=>n?({"United Kingdom":"UK","United States":"US","South Korea":"S. Korea"}[c]||c):c;
+
+// reading progress
+const prog=document.getElementById("progress");
+const onScroll=()=>{const h=document.documentElement,max=h.scrollHeight-h.clientHeight;prog.style.transform=`scaleX(${max>0?Math.min(1,h.scrollTop/max):0})`};
+addEventListener("scroll",onScroll,{passive:true});onScroll();
+
+// people grids
+function people(id,pct){d3.select("#"+id).selectAll("i").data(d3.range(100)).join("i").classed("on",i=>i<Math.round(pct))}
+people("pplP",avgP);people("pplE",avgE);
+
+// tooltip
+function tipAt(tip,host,x,y,html){tip.innerHTML=html;tip.classList.add("on");
+  const hw=host.clientWidth,tw=tip.offsetWidth,th=tip.offsetHeight;
+  let lx=x+14;if(lx+tw>hw)lx=Math.max(0,x-tw-14);
+  tip.style.left=lx+"px";tip.style.top=Math.max(0,y-th-10)+"px"}
+const rowsHTML=d=>`<b>${d.c} <span style="opacity:.6;font-weight:400">· #${d.rank}</span></b>
+<div class="r"><span>Printed books</span><span>${d.print.toFixed(1)}%</span></div>
+<div class="r"><span>E-books</span><span>${d.ebook.toFixed(1)}%</span></div>
+<div class="r"><span>Print lead</span><span>${d.gap.toFixed(1)} pts</span></div>
+<div class="r"><span>E-book per 10 print</span><span>${d.ratio.toFixed(1)}</span></div>`;
+
+/* ---------- Figure 1: sliced peach (Abhinav KR's sliced-fruit design) ----------
+   Left half: the peach skin = print buyers. Right half: the cut face, with the stone = e-book buyers. */
+const PEACH={
+  skin:[[0,"#e9505a"],[.38,"#f4775f"],[.72,"#ffab6e"],[1,"#ffc97a"]],
+  shadeX:[[0,"#ffffff",0],[.84,"#d9573f",0],[.95,"#c44a33",.35],[1,"#a83b28",.6]],
+  shadeY:[[0,"#ffffff",.22],[.15,"#ffffff",0],[.72,"#b8452f",0],[1,"#9c3622",.45]],
+  flesh:[[0,"#ffd27a"],[.6,"#ffbd5c"],[1,"#f9a646"]],
+  halo:[[0,"#d9413b",.9],[.5,"#ea6446",.5],[1,"#f6904f",0]],
+  stone:[[0,"#c47a4a"],[.55,"#94502c"],[1,"#66301a"]],
+  leaf:[[0,"#a3d063"],[1,"#4c8b2b"]],
+  rim:"#ef7a52", crease:"#c2463a", ridge:"#4f220d", stem:"#6d4428", vein:"#3f7a22", shadow:"#a08a7a"
+};
+const dfs=d3.select("body").insert("svg",":first-child").attr("width",0).attr("height",0).attr("aria-hidden","true").style("position","absolute").append("defs");
+function grad(type,id,stops,attrs){const g=dfs.append(type).attr("id",id);Object.entries(attrs).forEach(([k,v])=>g.attr(k,v));
+  g.selectAll("stop").data(stops).join("stop").attr("offset",s=>s[0]).attr("stop-color",s=>s[1]).attr("stop-opacity",s=>s[2]??1)}
+grad("radialGradient","pk-skin",PEACH.skin,{cx:.78,cy:.2,r:1.05});
+grad("linearGradient","pk-shade-x",PEACH.shadeX,{x1:0,x2:1,y1:0,y2:0});
+grad("linearGradient","pk-shade-y",PEACH.shadeY,{x1:0,x2:0,y1:0,y2:1});
+grad("radialGradient","pk-flesh",PEACH.flesh,{cx:0,cy:.5,r:1.05});
+grad("radialGradient","pk-halo",PEACH.halo,{cx:0,cy:.5,r:1});
+grad("radialGradient","pk-stone",PEACH.stone,{cx:.2,cy:.38,r:.95});
+grad("linearGradient","pk-leaf",PEACH.leaf,{x1:0,x2:1,y1:0,y2:1});
+dfs.append("filter").attr("id","fs-shadow").attr("x","-20%").attr("y","-20%").attr("width","150%").attr("height","150%")
+  .append("feDropShadow").attr("dx",2.5).attr("dy",3.5).attr("stdDeviation",2.6).attr("flood-color",PEACH.shadow).attr("flood-opacity",.5);
+// Peach silhouette, one half at a time (s = -1 left, +1 right); the shape is symmetric about the vertical cut.
+const peachHalf=(c,r,s,close=true)=>`M${c},${c-.82*r} C${c+s*.28*r},${c-1.04*r} ${c+s*.98*r},${c-.98*r} ${c+s*r},${c-.08*r} C${c+s*1.02*r},${c+.62*r} ${c+s*.5*r},${c+r} ${c},${c+1.05*r}${close?" Z":""}`;
+const stoneHalf=(c,w)=>{const h=w*1.25;return `M${c},${c-h} C${c+w*1.15},${c-h*.8} ${c+w*1.15},${c+h*.8} ${c},${c+h} Z`};
+let clipN=0;
+function drawPeach(svg,rP,rE){
+  const c=100,g=svg.append("g").attr("filter","url(#fs-shadow)").attr("class","fruitG");
+  ["pk-skin","pk-shade-x","pk-shade-y"].forEach(id=>g.append("path").attr("d",peachHalf(c,rP,-1)).attr("fill",`url(#${id})`));
+  g.append("path").attr("d",`M${c-.04*rP},${c-.8*rP} C${c-.4*rP},${c-.5*rP} ${c-.44*rP},${c+.3*rP} ${c-.18*rP},${c+.96*rP}`)
+    .attr("fill","none").attr("stroke",PEACH.crease).attr("stroke-width",Math.max(1.2,rP*.022)).attr("opacity",.35).attr("stroke-linecap","round");
+  const hx=c-rP*.52,hy=c-rP*.42;
+  g.append("ellipse").attr("cx",hx).attr("cy",hy).attr("rx",rP*.17).attr("ry",rP*.09).attr("fill","#fff").attr("opacity",.3).attr("transform",`rotate(-40 ${hx} ${hy})`);
+  g.append("path").attr("d",peachHalf(c,rP,1)).attr("fill","url(#pk-flesh)");
+  g.append("path").attr("d",peachHalf(c,rP,1,false)).attr("fill","none").attr("stroke",PEACH.rim).attr("stroke-width",Math.max(2,rP*.04));
+  // Clip the stone and its red halo to the cut face so neither can spill past the peach outline.
+  const clipId="pk-clip-"+(++clipN);
+  svg.append("clipPath").attr("id",clipId).append("path").attr("d",peachHalf(c,rP-1,1));
+  const cg=g.append("g").attr("clip-path",`url(#${clipId})`).append("g").attr("class","coreG");
+  rE*=.9;
+  if(rE>0){
+    const h=rE*1.25;
+    cg.append("path").attr("d",stoneHalf(c,rE*1.55)).attr("fill","url(#pk-halo)");
+    cg.append("path").attr("d",stoneHalf(c,rE)).attr("fill","url(#pk-stone)");
+    [[.12,-.7,.38,.12,.22,.42],[.32,-.2,.32,.14,.06,.42],[.16,.32,.32,.06,.12,.32]].forEach(([a,b,qx,qy,ex,ey])=>
+      cg.append("path").attr("d",`M${c+rE*a},${c+h*b} q${rE*qx},${h*qy} ${rE*ex},${h*ey}`).attr("fill","none")
+        .attr("stroke",PEACH.ridge).attr("stroke-width",Math.max(1,rE*.07)).attr("stroke-linecap","round").attr("opacity",.45));
+  }
+  const ex=c+.1*rP,ey=c-1.06*rP;
+  g.append("path").attr("d",`M${c+.02*rP},${c-.82*rP} C${c+.03*rP},${c-.93*rP} ${c+.07*rP},${c-1.0*rP} ${ex},${ey}`).attr("fill","none")
+    .attr("stroke",PEACH.stem).attr("stroke-width",Math.max(2,rP*.055)).attr("stroke-linecap","round");
+  const lx=c+.06*rP,ly=c-.97*rP;
+  g.append("path").attr("d",`M${lx},${ly} C${lx+.22*rP},${ly-.3*rP} ${lx+.56*rP},${ly-.22*rP} ${lx+.72*rP},${ly-.06*rP} C${lx+.52*rP},${ly+.1*rP} ${lx+.22*rP},${ly+.1*rP} ${lx},${ly} Z`).attr("fill","url(#pk-leaf)");
+  g.append("path").attr("d",`M${lx+.04*rP},${ly-.01*rP} Q${lx+.36*rP},${ly-.12*rP} ${lx+.66*rP},${ly-.06*rP}`).attr("fill","none")
+    .attr("stroke",PEACH.vein).attr("stroke-width",Math.max(.8,rP*.015)).attr("opacity",.6);
+}
+const sc=s=>`translate(${100*(1-s)},${100*(1-s)}) scale(${s})`;
+
+/* Orange variant: the classic round sliced-fruit form, same 3D shading structure as the original. */
+const ORANGE={
+  skinX:[[0,"#ffb45c"],[.06,"#ffa640"],[.15,"#f99a2a"],[.8,"#f38f1f"],[.88,"#e5800f"],[.93,"#d06e08"],[.97,"#b85c05"],[1,"#a14f04"]],
+  skinY:[[0,"#ffd9a8",.6],[.13,"#ffc27a",0],[.7,"#f38f1f",0],[.88,"#c9620a",.45],[1,"#a54f05",.8]],
+  coreR:[[0,"#e3f5b0"],[.3,"#d2ee8e"],[.55,"#b5e05e"],[.8,"#8fcc3a"],[.93,"#74bb2c"],[1,"#66b026"]],
+  coreX:[[0,"#3f7f1a",1],[.07,"#4f9222",.85],[.2,"#7db83a",.35],[.4,"#b5e05e",0]],
+  coreY:[[0,"#4a8a1f",.9],[.12,"#6fae2e",.45],[.28,"#b5e05e",0]],
+  flesh:"#fff6e6", fleshRim:"#f3d9b0", rim:"#f0fbd0"
+};
+grad("linearGradient","or-skin-x",ORANGE.skinX,{x1:0,x2:1,y1:0,y2:0});
+grad("linearGradient","or-skin-y",ORANGE.skinY,{x1:0,x2:0,y1:0,y2:1});
+grad("radialGradient","or-core-r",ORANGE.coreR,{cx:.47,cy:.5,r:.56});
+grad("linearGradient","or-core-x",ORANGE.coreX,{x1:0,x2:1,y1:0,y2:0});
+grad("linearGradient","or-core-y",ORANGE.coreY,{x1:0,x2:0,y1:0,y2:1});
+const half=(c,r,side)=>`M${c},${c-r} A${r},${r} 0 0 ${side} ${c},${c+r} Z`;
+const arc=(c,r)=>`M${c},${c-r} A${r},${r} 0 0 1 ${c},${c+r}`;
+function drawOrange(svg,rP,rE){
+  rP*=1.06;rE*=1.06;
+  const c=100,g=svg.append("g").attr("filter","url(#fs-shadow)").attr("class","fruitG");
+  ["or-skin-x","or-skin-y"].forEach(id=>g.append("path").attr("d",half(c,rP,0)).attr("fill",`url(#${id})`));
+  const hx=c-rP*.5,hy=c-rP*.48;
+  g.append("ellipse").attr("cx",hx).attr("cy",hy).attr("rx",rP*.17).attr("ry",rP*.09).attr("fill","#fff").attr("opacity",.38).attr("transform",`rotate(-38 ${hx} ${hy})`);
+  g.append("path").attr("d",half(c,rP,1)).attr("fill",ORANGE.flesh);
+  g.append("path").attr("d",arc(c,rP-1)).attr("fill","none").attr("stroke",ORANGE.fleshRim).attr("stroke-width",2.5);
+  const cg=g.append("g").attr("class","coreG");
+  if(rE>0){
+    ["or-core-r","or-core-x","or-core-y"].forEach(id=>cg.append("path").attr("d",half(c,rE,1)).attr("fill",`url(#${id})`));
+    cg.append("path").attr("d",arc(c,rE)).attr("fill","none").attr("stroke",ORANGE.rim).attr("stroke-width",1.4).attr("opacity",.9);
+  }
+}
+let fruitStyle="peach";
+try{if(localStorage.getItem("fruitStyle")==="orange")fruitStyle="orange"}catch(e){}
+function drawFruit(svg,rP,rE){return (fruitStyle==="orange"?drawOrange:drawPeach)(svg,rP,rE)}
+const rScale=d3.scaleSqrt().domain([0,d3.max(DATA,d=>d.print)]).range([0,80]);
+drawFruit(d3.select("#keyFruit"),78,30);
+const host0=document.getElementById("fruits"),tip0=document.getElementById("tip0");
+const cards=d3.select(host0).selectAll("div.fruit").data([...DATA].sort((a,b)=>a.rank-b.rank),d=>d.c).join("div")
+  .attr("class","fruit").attr("tabindex",0).attr("role","img").attr("aria-label",d=>`${d.c}, rank ${d.rank}: printed books ${d.print}%, e-books ${d.ebook}%`);
+cards.append("div").attr("class","vals")
+  .html(d=>`<span class="p"><span class="sw-c"></span>${d.print.toFixed(1)}%</span><span class="e"><span class="sw-g"></span>${d.ebook.toFixed(1)}%</span>`);
+cards.append("svg").attr("viewBox","0 -10 200 206").attr("aria-hidden","true").each(function(d){drawFruit(d3.select(this),rScale(d.print),rScale(d.ebook))});
+cards.append("div").attr("class","nm").html(d=>`<b>#${d.rank}</b>${d.c}`);
+cards.on("pointerenter focus pointerdown",function(e,d){
+    const hr=host0.getBoundingClientRect(),cr=this.getBoundingClientRect();
+    tipAt(tip0,host0,cr.left-hr.left+cr.width/2,cr.top-hr.top+24,rowsHTML(d));
+    if(!reduce)d3.select(this).select(".coreG").interrupt().transition().duration(380)
+      .attrTween("transform",()=>t=>sc(1+.08*Math.sin(Math.PI*t)));
+  })
+  .on("pointerleave blur",()=>tip0.classList.remove("on"));
+
+// Fruit entrance: each fruit appears (back-out ease), then its core grows from the cut.
+function animFruits(){
+  const order=cards.nodes();
+  cards.select(".fruitG").interrupt().attr("transform",sc(.3)).attr("opacity",0)
+    .transition().delay(function(){return order.indexOf(this.closest(".fruit"))*85}).duration(700)
+    .ease(d3.easeBackOut.overshoot(1.5)).attr("transform",sc(1)).attr("opacity",1);
+  cards.select(".coreG").interrupt().attr("transform",sc(0))
+    .transition().delay(function(){return order.indexOf(this.closest(".fruit"))*85+480}).duration(650)
+    .ease(d3.easeCubicOut).attr("transform",sc(1));
+}
+// Fruit re-ordering: FLIP technique driven by D3 style transitions.
+const FSORT={gap:(a,b)=>b.gap-a.gap,print:(a,b)=>b.print-a.print,ebook:(a,b)=>b.ebook-a.ebook,ratio:(a,b)=>b.ratio-a.ratio};
+function sortFruits(key){
+  const first=new Map();cards.each(function(d){first.set(d.c,this.getBoundingClientRect())});
+  const sorted=cards.sort(FSORT[key]);
+  sorted.select(".nm b").text((d,i)=>"#"+(i+1));
+  if(reduce)return;
+  sorted.each(function(d,i){const a=first.get(d.c),b=this.getBoundingClientRect();
+    d3.select(this).interrupt().style("transform",`translate(${a.left-b.left}px,${a.top-b.top}px)`)
+      .transition().delay(i*30).duration(720).ease(d3.easeCubicInOut).style("transform","translate(0px,0px)")});
+}
+d3.selectAll("[data-fsort]").on("click",function(){
+  const btn=this;d3.selectAll("[data-fsort]").attr("aria-pressed",function(){return this===btn});sortFruits(btn.dataset.fsort)});
+
+// Fruit style switch: redraw every fruit with the chosen renderer, update legend copy, replay the entrance.
+const STYLE={
+  peach:{title:"Ten markets, sliced like a peach",sub:"Each peach is one country. The skin is the share who bought a printed book; the stone is the share who bought an e-book.",
+    k1:"Peach size shows print share. The blushing skin is the print buyers.",k2:"The stone shows e-book share, on the same scale."},
+  orange:{title:"Ten markets, sliced open",sub:"Each fruit is one country. The orange skin is the share who bought a printed book; the green core is the share who bought an e-book.",
+    k1:"Fruit size shows print share. The orange skin is the print buyers.",k2:"The green core shows e-book share, on the same scale."}
+};
+function applyStyle(animate){
+  const S=STYLE[fruitStyle];
+  d3.select(".stage").attr("data-style",fruitStyle);
+  d3.select("#f1t").text(S.title);d3.select("#f1s").text(S.sub);d3.select("#k1").text(S.k1);d3.select("#k2").text(S.k2);
+  d3.selectAll("[data-fstyle]").attr("aria-pressed",function(){return this.dataset.fstyle===fruitStyle});
+  const key=d3.select("#keyFruit");key.selectAll("*").remove();drawFruit(key,78,30);
+  cards.select("svg").each(function(d){const s=d3.select(this);s.selectAll("*").remove();drawFruit(s,rScale(d.print),rScale(d.ebook))});
+  if(animate&&!reduce)animFruits();
+}
+d3.selectAll("[data-fstyle]").on("click",function(){
+  if(this.dataset.fstyle===fruitStyle)return;
+  fruitStyle=this.dataset.fstyle;try{localStorage.setItem("fruitStyle",fruitStyle)}catch(e){}
+  applyStyle(true)});
+applyStyle(false);
+
+// Headline: numbers count up, then the 100-person grids fill one dot at a time.
+function animHeadline(){
+  d3.selectAll(".hl-num").each(function(){const v=+this.dataset.v;
+    d3.select(this).interrupt().transition().duration(1300).ease(d3.easeCubicOut).textTween(()=>t=>(v*t).toFixed(1)+"%")});
+  ["pplP","pplE"].forEach(id=>{d3.select("#"+id).selectAll("i.on").classed("on",false).interrupt()
+    .transition().delay((d,i)=>150+i*16).duration(0).on("start",function(){d3.select(this).classed("on",true)})});
+}
+
+/* ---------- Figure 2: dumbbell ---------- */
+let sortKey="gap",dumb=null;
+const host1=document.getElementById("dumb"),tip1=document.getElementById("tip1");
+function buildDumb(){
+  d3.select(host1).selectAll("svg").remove();
+  const W=Math.max(300,host1.clientWidth),n=W<600;
+  const m={l:n?100:176,r:n?18:76,t:26,b:30},rowH=n?40:46,H=m.t+DATA.length*rowH+m.b;
+  const x=d3.scaleLinear().domain([0,60]).range([m.l,W-m.r-(n?26:0)]);
+  const y=d3.scaleBand().range([m.t,H-m.b]);
+  const svg=d3.select(host1).insert("svg","#tip1").attr("viewBox",`0 0 ${W} ${H}`).attr("role","img")
+    .attr("aria-label","Dot plot comparing printed-book and e-book purchase shares in ten countries");
+  const ticks=n?[0,20,40,60]:d3.range(0,61,10);
+  svg.append("g").selectAll("line").data(ticks).join("line").attr("x1",x).attr("x2",x).attr("y1",m.t-6).attr("y2",H-m.b).attr("stroke","var(--grid)");
+  svg.append("g").selectAll("text").data(ticks).join("text").attr("class","ax").attr("x",x).attr("y",12).attr("text-anchor","middle").text(t=>t+"%");
+  if(!n)svg.append("text").attr("class","ax").attr("x",W).attr("y",12).attr("text-anchor","end").text("LEAD");
+  [[avgP,"var(--print)","Avg print "+avgP.toFixed(1)],[avgE,"var(--ebook)","Avg e-book "+avgE.toFixed(1)]].forEach(([v,c,l])=>{
+    svg.append("line").attr("x1",x(v)).attr("x2",x(v)).attr("y1",m.t-6).attr("y2",H-m.b+4).attr("stroke",c).attr("stroke-dasharray","3 4").attr("opacity",.75);
+    svg.append("text").attr("class","avl").attr("x",x(v)).attr("y",H-m.b+18).attr("text-anchor","middle").text(n?v.toFixed(1):l);
+  });
+  const rows=svg.append("g").selectAll("g.row").data(DATA,d=>d.c).join("g").attr("class","row");
+  rows.append("rect").attr("class","row-bg").attr("x",0).attr("y",-rowH/2+2).attr("width",W).attr("height",rowH-4).attr("rx",6);
+  rows.append("text").attr("class","rk").attr("x",0).attr("y",4);
+  rows.append("text").attr("class","cn").attr("x",n?22:28).attr("y",4.5).text(d=>short(d.c,n));
+  rows.append("rect").attr("class","bar").attr("x",d=>x(d.ebook)).attr("y",-3).attr("height",6).attr("rx",3).attr("width",d=>x(d.print)-x(d.ebook)).attr("fill","var(--grid)");
+  rows.append("circle").attr("cx",d=>x(d.ebook)).attr("r",6.5).attr("fill","var(--surface)").attr("stroke","var(--ebook)").attr("stroke-width",3);
+  rows.append("circle").attr("class","pdot").attr("cx",d=>x(d.print)).attr("r",8).attr("fill","var(--print)").attr("stroke","var(--surface)").attr("stroke-width",2);
+  rows.append("text").attr("class","vl").attr("x",d=>x(d.ebook)-12).attr("y",4).attr("text-anchor","end").text(d=>d.ebook.toFixed(1));
+  rows.append("text").attr("class","vl pval").attr("x",d=>x(d.print)+13).attr("y",4).text(d=>d.print.toFixed(1));
+  if(!n)rows.append("text").attr("class","gl").attr("x",W).attr("y",4).attr("text-anchor","end").text(d=>"+"+d.gap.toFixed(1));
+  rows.append("rect").attr("class","hit").attr("x",0).attr("y",-rowH/2).attr("width",W).attr("height",rowH)
+    .on("pointermove pointerdown",function(e,d){d3.select(this.parentNode).classed("hl",true);
+      const [px]=d3.pointer(e,host1),k=host1.clientWidth/W;tipAt(tip1,host1,px,(y(d.c)+y.bandwidth()/2)*k,rowsHTML(d))})
+    .on("pointerleave",function(){d3.select(this.parentNode).classed("hl",false);tip1.classList.remove("on")});
+  dumb={rows,y,x};sortDumb(false);
+}
+// Dumbbell entrance: each print dot slides out from its e-book dot while the gap bar stretches and the value counts.
+function animDumb(){
+  const {rows,x,y}=dumb,dl=d=>y.domain().indexOf(d.c)*70,ease=d3.easeCubicOut;
+  rows.select(".bar").interrupt().attr("width",0).transition().delay(dl).duration(850).ease(ease).attr("width",d=>x(d.print)-x(d.ebook));
+  rows.select(".pdot").interrupt().attr("cx",d=>x(d.ebook)).transition().delay(dl).duration(850).ease(ease).attr("cx",d=>x(d.print));
+  rows.select(".pval").interrupt().attr("x",d=>x(d.ebook)+13).style("opacity",0).transition().delay(dl).duration(850).ease(ease)
+    .attr("x",d=>x(d.print)+13).style("opacity",1).textTween(d=>t=>(d.ebook+(d.print-d.ebook)*t).toFixed(1));
+  rows.select(".gl").interrupt().style("opacity",0).transition().delay(d=>dl(d)+600).duration(400).style("opacity",1);
+}
+function sortDumb(animate){
+  const order=[...DATA].sort((a,b)=>b[sortKey]-a[sortKey]);
+  dumb.y.domain(order.map(d=>d.c));
+  const pos=Object.fromEntries(order.map((d,i)=>[d.c,i+1]));
+  dumb.rows.select(".rk").text(d=>String(pos[d.c]).padStart(2,"0"));
+  dumb.rows.transition().duration(animate&&!reduce?650:0).ease(d3.easeCubicInOut)
+    .attr("transform",d=>`translate(0,${dumb.y(d.c)+dumb.y.bandwidth()/2})`);
+}
+d3.selectAll("[data-sort]").on("click",function(){
+  const btn=this;sortKey=btn.dataset.sort;
+  d3.selectAll("[data-sort]").attr("aria-pressed",function(){return this===btn});
+  sortDumb(true)});
+
+/* ---------- Figure 3: ratio bars ---------- */
+const host2=document.getElementById("ratioChart"),tip2=document.getElementById("tip2");
+function buildRatio(){
+  d3.select(host2).selectAll("svg").remove();
+  const W=Math.max(300,host2.clientWidth),n=W<600;
+  // Same plot edges as Figure 2 (left 176 / right 76 on desktop) so the two charts share one vertical grid.
+  const m={l:n?100:176,r:n?34:76,t:26,b:30},rowH=n?32:34,H=m.t+DATA.length*rowH+m.b;
+  const order=[...DATA].sort((a,b)=>b.ratio-a.ratio),top=order[0].c;
+  const x=d3.scaleLinear().domain([0,10]).range([m.l,W-m.r]);
+  const y=d3.scaleBand().domain(order.map(d=>d.c)).range([m.t,H-m.b]).padding(.32),bw=y.bandwidth();
+  const svg=d3.select(host2).insert("svg","#tip2").attr("viewBox",`0 0 ${W} ${H}`).attr("role","img").attr("aria-label","Bar chart of e-book buyers per ten print buyers by country");
+  const ticks=n?[0,5,10]:d3.range(0,11,2);
+  svg.append("g").selectAll("line").data(ticks).join("line").attr("x1",x).attr("x2",x).attr("y1",m.t-6).attr("y2",H-m.b).attr("stroke","var(--grid)");
+  svg.append("g").selectAll("text").data(ticks).join("text").attr("class","ax").attr("x",x).attr("y",12).attr("text-anchor",t=>t===10?"end":"middle").text(t=>t===10?"10 = parity":t);
+  const rows=svg.append("g").selectAll("g").data(order).join("g").attr("class","row").attr("transform",d=>`translate(0,${y(d.c)})`);
+  rows.append("rect").attr("class","row-bg").attr("x",0).attr("y",-(rowH-bw)/2+1).attr("width",W).attr("height",rowH-2).attr("rx",5);
+  rows.append("text").attr("class","cn").attr("x",0).attr("y",bw/2+4.5).text(d=>short(d.c,n));
+  const barD=w=>{const r=Math.min(4,w);return `M${m.l},0h${w-r}a${r},${r} 0 0 1 ${r},${r}v${bw-2*r}a${r},${r} 0 0 1 -${r},${r}h-${w-r}z`};
+  rows.append("path").attr("class","rbar").attr("fill","var(--ebook)").attr("opacity",d=>d.c===top?1:.6).attr("d",d=>barD(x(d.ratio)-m.l));
+  rows.append("text").attr("class",d=>(d.c===top?"gl":"vl")+" rval").attr("x",d=>x(d.ratio)+8).attr("y",bw/2+4).text(d=>d.ratio.toFixed(1));
+  rows.append("rect").attr("class","hit").attr("x",0).attr("y",-(rowH-bw)/2).attr("width",W).attr("height",rowH)
+    .on("pointermove pointerdown",function(e,d){d3.select(this.parentNode).classed("hl",true);const [px]=d3.pointer(e,host2),k=host2.clientWidth/W;tipAt(tip2,host2,px,(y(d.c)+bw/2)*k,rowsHTML(d))})
+    .on("pointerleave",function(){d3.select(this.parentNode).classed("hl",false);tip2.classList.remove("on")});
+  svg.append("line").attr("class","ravg").attr("x1",x(avgR)).attr("x2",x(avgR)).attr("y1",m.t-6).attr("y2",H-m.b+4).attr("stroke","var(--ink-3)").attr("stroke-width",1.25).attr("stroke-dasharray","4 4");
+  svg.append("text").attr("class","avl ravg").attr("x",x(avgR)).attr("y",H-m.b+18).attr("text-anchor","middle").text("avg "+avgR.toFixed(1));
+  ratio={rows,x,m,barD,avg:svg.selectAll(".ravg")};
+}
+let ratio=null;
+// Ratio entrance: bars grow with a staggered cascade while their values count up; the average line settles in last.
+function animRatio(){
+  const {rows,x,m,barD,avg}=ratio,ease=d3.easeCubicOut;
+  rows.select(".rbar").interrupt().attr("d",barD(0)).transition().delay((d,i)=>i*65).duration(850).ease(ease)
+    .attrTween("d",d=>t=>barD((x(d.ratio)-m.l)*t));
+  rows.select(".rval").interrupt().attr("x",m.l+8).transition().delay((d,i)=>i*65).duration(850).ease(ease)
+    .attr("x",d=>x(d.ratio)+8).textTween(d=>t=>(d.ratio*t).toFixed(1));
+  avg.interrupt().style("opacity",0).transition().delay(950).duration(500).style("opacity",1);
+}
+
+/* ---------- Figure 4: distance from parity (scatter) ---------- */
+const host3=document.getElementById("scatter"),tip3=document.getElementById("tip3");let scat=null;
+function buildScatter(){
+  d3.select(host3).selectAll("svg").remove();
+  const W=Math.max(300,host3.clientWidth),n=W<600,H=Math.round(Math.min(540,Math.max(340,W*.58)));
+  const m={l:44,r:14,t:18,b:46};
+  const x=d3.scaleLinear().domain([0,60]).range([m.l,W-m.r]),y=d3.scaleLinear().domain([0,30]).range([H-m.b,m.t]);
+  const svg=d3.select(host3).insert("svg","#tip3").attr("viewBox",`0 0 ${W} ${H}`).attr("role","img")
+    .attr("aria-label","Scatter plot of e-book share against print share, with reference lines for parity, 5 and 2.5 e-book buyers per 10 print buyers");
+  const gx=d3.range(0,61,n?20:10),gy=d3.range(0,31,10);
+  svg.append("g").selectAll("line").data(gx).join("line").attr("x1",x).attr("x2",x).attr("y1",m.t).attr("y2",H-m.b).attr("stroke","var(--grid)");
+  svg.append("g").selectAll("line").data(gy).join("line").attr("y1",y).attr("y2",y).attr("x1",m.l).attr("x2",W-m.r).attr("stroke","var(--grid)");
+  svg.append("g").selectAll("text").data(gx).join("text").attr("class","ax").attr("x",x).attr("y",H-m.b+18).attr("text-anchor","middle").text(d=>d+"%");
+  svg.append("g").selectAll("text").data(gy).join("text").attr("class","ax").attr("x",0).attr("y",d=>y(d)+4).attr("text-anchor","start").text(d=>d+"%");
+  svg.append("text").attr("class","ax").attr("x",W-m.r).attr("y",H-8).attr("text-anchor","end").text("PRINT SHARE →");
+  svg.append("text").attr("class","ax").attr("x",m.l+8).attr("y",m.t+12).text("↑ E-BOOK SHARE");
+  const rays=[{k:10,l:"parity"},{k:5,l:"5 per 10"},{k:2.5,l:"2.5 per 10"}].map(r=>{const xe=Math.min(60,30/(r.k/10));return {...r,xe,ye:r.k/10*xe}});
+  svg.append("g").selectAll("line").data(rays).join("line").attr("class",r=>"ray"+(r.k===10?" parity":""))
+    .attr("x1",x(0)).attr("y1",y(0)).attr("x2",r=>x(r.xe)).attr("y2",r=>y(r.ye));
+  const rl=svg.append("g").selectAll("text").data(rays).join("text").attr("class","ray-l")
+    // parity ends on the top edge: label sits just right of the line end; the others end on the right edge: label inside, clear of the line
+    .attr("x",r=>r.k===10?x(r.xe)+8:x(r.xe)-6).attr("y",r=>r.k===10?y(r.ye)+12:r.k===5?y(r.ye)+18:y(r.ye)-8)
+    .attr("text-anchor",r=>r.k===10?"start":"end").text(r=>r.l);
+  const pts=svg.append("g").selectAll("circle").data(DATA).join("circle").attr("class","pt")
+    .attr("cx",d=>x(d.print)).attr("cy",d=>y(d.ebook)).attr("r",7).attr("fill","var(--print)").attr("stroke","var(--surface)").attr("stroke-width",2);
+  // Label placement with a force simulation: labels repel each other and the points, and are pulled toward their anchor.
+  const anchors=DATA.map(d=>({fx:x(d.print),fy:y(d.ebook),r:11,fixed:true}));
+  const labels=DATA.map(d=>{const w=short(d.c,n).length*7+8;return {d,w,ax:x(d.print),ay:y(d.ebook),x:x(d.print)+w/2+10,y:y(d.ebook)-14,r:w/2*.62+3}});
+  const sim=d3.forceSimulation([...anchors,...labels]).stop()
+    .force("collide",d3.forceCollide(d=>d.r).strength(.9).iterations(3))
+    .force("x",d3.forceX(d=>d.fixed?d.fx:d.ax+d.w/2+10).strength(d=>d.fixed?0:.12))
+    .force("y",d3.forceY(d=>d.fixed?d.fy:d.ay-14).strength(d=>d.fixed?0:.12));
+  for(let i=0;i<260;i++)sim.tick();
+  labels.forEach(l=>{l.x=Math.max(m.l+l.w/2,Math.min(W-m.r-l.w/2,l.x));l.y=Math.max(m.t+10,Math.min(H-m.b-6,l.y))});
+  const leaders=svg.append("g").selectAll("line").data(labels.filter(l=>Math.hypot(l.x-l.ax,l.y-l.ay)>l.w/2+14)).join("line").attr("class","leader")
+    .attr("x1",l=>l.ax).attr("y1",l=>l.ay).attr("x2",l=>l.x).attr("y2",l=>l.y+ (l.y<l.ay?4:-8));
+  const lbls=svg.append("g").selectAll("text").data(labels).join("text").attr("class",l=>"lbl"+(l.d.c==="China"?" top":""))
+    .attr("x",l=>l.x).attr("y",l=>l.y+4).attr("text-anchor","middle").text(l=>short(l.d.c,n));
+  // Nearest-point hover with a Delaunay triangulation.
+  const del=d3.Delaunay.from(DATA,d=>x(d.print),d=>y(d.ebook));
+  svg.append("rect").attr("class","hit").attr("x",m.l).attr("y",m.t).attr("width",W-m.l-m.r).attr("height",H-m.t-m.b)
+    .on("pointermove pointerdown",function(e){const [px,py]=d3.pointer(e,svg.node()),i=del.find(px,py),d=DATA[i],k=host3.clientWidth/W;
+      pts.classed("on",p=>p===d).attr("r",p=>p===d?10:7);tipAt(tip3,host3,x(d.print)*k,y(d.ebook)*k,rowsHTML(d))})
+    .on("pointerleave",()=>{pts.classed("on",false).attr("r",7);tip3.classList.remove("on")});
+  scat={svg,x,y,pts,rays:svg.selectAll(".ray"),rl,leaders,lbls};
+}
+// Scatter entrance: reference lines draw themselves from the origin, points rise from the print axis to their e-book share, labels fade in.
+function animScatter(){
+  const {x,y,pts,rays,rl,leaders,lbls}=scat;
+  rays.interrupt().each(function(){const L=this.getTotalLength();d3.select(this).attr("stroke-dasharray",`${L} ${L}`).attr("stroke-dashoffset",L)})
+    .transition().delay((d,i)=>i*180).duration(900).ease(d3.easeCubicInOut).attr("stroke-dashoffset",0)
+    .on("end",function(){d3.select(this).attr("stroke-dasharray",null)});
+  rl.interrupt().style("opacity",0).transition().delay(900).duration(400).style("opacity",1);
+  const order=[...DATA].sort((a,b)=>a.print-b.print);
+  pts.interrupt().attr("cy",y(0)).attr("opacity",0).transition().delay(d=>500+order.indexOf(d)*90).duration(900)
+    .ease(d3.easeElasticOut.amplitude(1).period(.55)).attr("cy",d=>y(d.ebook)).attr("opacity",1);
+  leaders.interrupt().style("opacity",0).transition().delay(1700).duration(500).style("opacity",null);
+  lbls.interrupt().style("opacity",0).transition().delay(l=>1500+order.indexOf(l.d)*60).duration(450).style("opacity",1);
+}
+
+// data table
+const tbl=document.getElementById("tbl"),tblBtn=document.getElementById("tblBtn");
+tbl.innerHTML=`<table><thead><tr><th>Rank</th><th>Country</th><th>Printed books</th><th>E-books</th><th>Print lead</th><th>E-book per 10 print</th></tr></thead><tbody>${
+  [...DATA].sort((a,b)=>a.rank-b.rank).map(d=>`<tr><td>${d.rank}</td><td>${d.c}</td><td>${d.print.toFixed(1)}%</td><td>${d.ebook.toFixed(1)}%</td><td>${d.gap.toFixed(1)} pts</td><td>${d.ratio.toFixed(1)}</td></tr>`).join("")
+}</tbody><tfoot><tr><td></td><td>Ten-market average</td><td>${avgP.toFixed(1)}%</td><td>${avgE.toFixed(1)}%</td><td>${(avgP-avgE).toFixed(1)} pts</td><td>${avgR.toFixed(1)}</td></tr></tfoot></table>`;
+tblBtn.addEventListener("click",()=>{const open=tbl.hidden;tbl.hidden=!open;tblBtn.setAttribute("aria-expanded",open);tblBtn.textContent=open?"Hide data table":"Show data table"});
+
+function drawAll(){buildDumb();buildRatio();buildScatter()}
+drawAll();
+
+// Play each entrance once, when its chart first scrolls into view. Charts are fully drawn before that,
+// so thumbnails, reduced-motion readers and no-JS-observer browsers always see the finished state.
+const ANIM={headline:animHeadline,fruits:animFruits,dumb:animDumb,ratio:animRatio,scatter:animScatter};
+const TARGET={headline:document.querySelector(".headline"),fruits:host0,dumb:host1,ratio:host2,scatter:host3};
+if(!reduce&&"IntersectionObserver" in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);ANIM[e.target.dataset.anim]()}}),{threshold:.3});
+  Object.entries(TARGET).forEach(([k,el])=>{el.dataset.anim=k;io.observe(el)});
+}
+d3.selectAll("[data-replay]").property("hidden",reduce).on("click",function(){ANIM[this.dataset.replay]()});
+let rt,lastW=innerWidth;addEventListener("resize",()=>{if(innerWidth===lastW)return;lastW=innerWidth;clearTimeout(rt);rt=setTimeout(drawAll,120)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawAll);
+})();
+</script>
+
+</body>
+</html>
