@@ -262,7 +262,10 @@ tfoot td{font-weight:600;border-bottom:0}
 .nw{white-space:nowrap}
 .band figure{max-width:none;margin:var(--s6) 0 0}
 .band.alt figure{background:var(--surface)}
-.bridge{margin-top:var(--s6)}
+.bridge{margin-top:var(--s4)}
+/* bridge copy is a quiet lead-in to the next figure, not body text */
+.bridge .prose p{display:flex;gap:10px;align-items:baseline;font-size:14.5px;line-height:1.6;color:var(--ink-2);max-width:560px}
+.bridge .prose p::before{content:"\2193";font:500 13px/1 var(--f-mono);color:var(--accent);flex:none}
 .tiles{margin:var(--s6) 0 0}
 .tile{padding:var(--s3)}
 .tile .s{margin:0 0 var(--s2)}
@@ -369,7 +372,7 @@ tfoot td{font-weight:600;border-bottom:0}
 
     <div class="sec-grid bridge">
       <div></div>
-      <div class="prose"><p>The fruits show the pattern at a glance: big skins, small cores. For an exact comparison, the dot plot below puts both shares on one axis.</p></div>
+      <div class="prose"><p>The fruits show the pattern at a glance: large skins, small centres. For exact values, the dot plot below puts both shares on one axis.</p></div>
     </div>
 
     <figure aria-labelledby="f2t">
@@ -430,7 +433,7 @@ tfoot td{font-weight:600;border-bottom:0}
 
     <div class="sec-grid bridge">
       <div></div>
-      <div class="prose"><p>Plotting both shares together shows how far each market sits from parity. Every line from the corner marks a fixed ratio. The steeper a market's position, the closer its e-book buyers come to matching its print buyers.</p></div>
+      <div class="prose"><p>Plotting both shares together shows how far each market sits from parity. Each line from the corner is a fixed ratio; the steeper a market sits, the closer it is to parity.</p></div>
     </div>
 
     <figure aria-labelledby="f4t">
