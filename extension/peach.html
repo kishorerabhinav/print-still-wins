@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="ext.css">
+<title>Sliced Peach Chart</title></head>
+<body data-view="peach"><div class="app">
+<div class="bar">
+  <div class="grp"><span class="lbl" id="l1">Style</span><div class="seg" role="group" aria-labelledby="l1"><button type="button" data-fstyle="peach">Peach</button><button type="button" data-fstyle="orange">Orange</button></div></div>
+  <div class="grp"><span class="lbl" id="l2">Order by</span><div class="seg" role="group" aria-labelledby="l2"><button type="button" data-sort="gap" aria-pressed="true">Print lead</button><button type="button" data-sort="print" aria-pressed="false">Print</button><button type="button" data-sort="ebook" aria-pressed="false">E-book</button><button type="button" data-sort="ratio" aria-pressed="false">Closest to parity</button></div></div>
+  <div class="grp"><span id="badge"></span><button type="button" class="btn" id="replay">Replay</button></div>
+</div>
+<div id="chart"></div></div>
+<div class="tip" id="tip"></div>
+<script src="lib/tableau.extensions.1.latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="app.js"></script>
+</body></html>

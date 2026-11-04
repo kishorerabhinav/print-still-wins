@@ -1,0 +1,30 @@
+/* Shared styles for the Tableau D3 extension views. The extension sits inside a white dashboard zone. */
+:root{--ink:#0F1B26;--ink-2:#44525F;--ink-3:#6B7884;--rule:#DCE2E7;--hl:#EEF4F8;--print:#1479AE;--ebook:#2A9D4E;--accent:#0F5F8A;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#FFFFFF;color:var(--ink);font:13px/1.5 var(--f-body);-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100%}
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:8px 12px;border-bottom:1px solid var(--rule)}
+.bar .grp{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lbl{font:500 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:8px;padding:2px;background:#F4F6F8}
+.seg button{font:500 12px/1 var(--f-body);color:var(--ink-2);background:none;border:0;padding:6px 10px;border-radius:6px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(15,27,38,.12)}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2);cursor:pointer}
+.chk input{accent-color:var(--print);margin:0}
+.btn{font:500 12px var(--f-body);color:var(--accent);background:none;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
+#badge{font:400 10.5px var(--f-mono);color:var(--ink-3)}
+#chart{position:relative;flex:1;min-height:0}
+#chart svg{display:block}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hit{fill:transparent}
+.cell:hover .hit{fill:var(--hl)}
+.val{font:500 12px var(--f-mono)}.val .vp{fill:#B23A30}.val .ve{fill:#7A3E1C}.val .sep{fill:var(--ink-3)}
+.nm{font:500 13px var(--f-body);fill:var(--ink)}.nm .rk{font:400 11px var(--f-mono);fill:var(--ink-3)}
+.maplbl{font:600 11.5px var(--f-body);fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
+.tk{font:400 10.5px var(--f-mono);fill:var(--ink-3)}.lgt{font:500 10.5px var(--f-mono);fill:var(--ink-2)}
+.dim{opacity:.25;transition:opacity .25s}.sel .glyph,.sel{opacity:1}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;border-radius:8px;padding:9px 11px;font-size:12px;line-height:1.5;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transition:opacity .12s;z-index:5}
+.tip.on{opacity:1}.tip b{display:block;font-size:13px;margin-bottom:4px}.tip .muted{opacity:.6;font-weight:400}
+.tip .r{display:flex;justify-content:space-between;gap:16px;font-family:var(--f-mono)}.tip .r span:first-child{opacity:.75;font-family:var(--f-body)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
