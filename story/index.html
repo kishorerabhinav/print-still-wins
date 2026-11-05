@@ -10,6 +10,9 @@
           --serif: Georgia, "Times New Roman", serif; --sans: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--bg2); color: var(--ink); font: 13px/1.45 var(--sans); overflow: hidden; height: 100%; }
+  /* opened directly in a browser: a normal centred, scrollable page */
+  html.standalone, html.standalone body { overflow-x: hidden; overflow-y: auto; height: auto; }
+  html.standalone #page { position: absolute; box-shadow: 0 1px 3px rgba(18,24,32,.08); }
   #page { display: flex; flex-direction: column; width: 960px; transform-origin: 0 0; position: fixed; left: 0; top: 0; background: #fff; }
   .wrap { width: 924px; margin: 0 auto; }
   button { font-family: inherit; }
@@ -227,6 +230,8 @@
 
   /* ---------------- state ---------------- */
   let FIT = 1;   // page scale, set by fit()
+  const STANDALONE = window.parent === window && !/zone=1/.test(location.search);   // opened directly in a browser
+  if (STANDALONE) document.documentElement.classList.add("standalone");
   const state = { view: "gap", order: "gap", selected: "", scenario: 0, base: PREVIEW, live: false, playing: false, step: 0 };
   { const q = new URLSearchParams(location.search);   // deep links: ?view=radar&spot=China&scenario=5&order=ratio
     if (VIEWS.some(v => v.id === q.get("view"))) state.view = q.get("view");
@@ -641,10 +646,21 @@
     render(true);
   }
   // scale the 1200px page to fit the viewport (both directions), centred horizontally
+  // In a Tableau zone the canvas fills the zone exactly (no scroll). Opened directly in a browser it is a normal
+  // page: readable scale, centred, fixed design height, and the window scrolls.
   function fit() {
-    const page = document.getElementById("page"), w = window.innerWidth || 960, h = window.innerHeight || 894;
-    FIT = w / 960;
-    page.style.height = Math.max(720, Math.floor(h / FIT)) + "px";   // canvas height in page px
+    const page = document.getElementById("page"), w = document.documentElement.clientWidth || window.innerWidth || 960, h = window.innerHeight || 894;
+    if (STANDALONE) {
+      FIT = Math.max(.5, Math.min(1.3, (w - 32) / 960));
+      const ph = 1000;                                                   // design height in page px
+      page.style.height = ph + "px";
+      page.style.left = Math.max(0, (w - 960 * FIT) / 2) + "px";
+      page.style.top = (w > 992 ? 16 : 0) + "px";
+      document.body.style.height = Math.ceil(ph * FIT + (w > 992 ? 32 : 0)) + "px";
+    } else {
+      FIT = w / 960;
+      page.style.height = Math.max(720, Math.floor(h / FIT)) + "px";   // canvas height in page px
+    }
     page.style.transform = "scale(" + FIT + ")";
   }
   let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { fit(); render(true); }, 100); });
