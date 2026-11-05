@@ -9,8 +9,9 @@
           --print:#1a71b2; --ebook:#2a9d4e; --warn:#b42318;
           --serif: Georgia, "Times New Roman", serif; --sans: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: #fff; color: var(--ink); font: 13px/1.45 var(--sans); }
-  .wrap { width: 1040px; margin: 0 auto; }
+  html, body { margin: 0; background: #fff; color: var(--ink); font: 13px/1.45 var(--sans); overflow: hidden; height: 100%; }
+  #page { width: 1120px; transform-origin: 0 0; position: absolute; left: 0; top: 0; background: #fff; }
+  .wrap { width: 1072px; margin: 0 auto; }
   button { font-family: inherit; }
 
   /* top bar */
@@ -40,19 +41,19 @@
 
   /* controls */
   .ctlband { border-top: 1px solid var(--rule); }
-  .ctl { display: flex; align-items: center; gap: 12px; padding: 10px 0 0; white-space: nowrap; }
+  .ctl { display: flex; align-items: center; gap: 10px; padding: 10px 0; white-space: nowrap; }
   .ctl2 { display: flex; justify-content: flex-end; padding: 8px 0 10px; }
   .seg { display: flex; background: var(--chip); border-radius: 7px; padding: 3px; }
-  .tab { font-size: 11px; font-weight: 500; color: var(--ink2); background: none; border: 1.5px solid transparent; border-radius: 5px; padding: 5px 8px; cursor: pointer; white-space: nowrap; }
+  .tab { font-size: 11px; font-weight: 500; color: var(--ink2); background: none; border: 1.5px solid transparent; border-radius: 5px; padding: 5px 7px; cursor: pointer; white-space: nowrap; }
   .tab:hover { color: var(--ink); }
   .tab[aria-pressed="true"] { background: #fff; color: var(--ink); border-color: var(--print); font-weight: 600; }
   .lbl { font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink3); }
-  select { font: 11px var(--sans); color: var(--ink); padding: 5px 6px; border: 1px solid var(--rule); border-radius: 5px; background: #fff; width: 120px; }
-  .pill { display: flex; align-items: center; gap: 8px; border: 1px solid var(--rule); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--ink2); }
-  input[type=range] { width: 92px; accent-color: var(--ebook); margin: 0; }
+  select { font: 11px var(--sans); color: var(--ink); padding: 5px 6px; border: 1px solid var(--rule); border-radius: 5px; background: #fff; width: 112px; }
+  .pill { display: flex; align-items: center; gap: 7px; border: 1px solid var(--rule); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--ink2); }
+  input[type=range] { width: 80px; accent-color: var(--ebook); margin: 0; }
   #scenv { font-weight: 700; color: var(--ebook); min-width: 42px; }
   #scenv.on { color: var(--warn); }
-  .play { font-size: 11px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; min-width: 88px; }
+  .play { margin-left: auto; font-size: 11px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; min-width: 88px; }
 
   /* stage */
   .stage { background: var(--bg2); padding: 14px 0 6px; }
@@ -127,6 +128,7 @@
 <script src="d3.v7.8.5.min.js"></script>
 </head>
 <body>
+<div id="page">
 <div class="top">
   <div class="wrap topin">
     <span class="crumb"><span class="dot"></span><b>READING HABITS</b> / DATA STORY<span id="src">· Loading…</span></span>
@@ -154,8 +156,8 @@
     </select>
     <label class="pill"><span class="lbl">Scenario</span><span>What if e-book share rose by</span>
       <input type="range" id="scen" min="0" max="15" step="1" value="0"><span id="scenv">+0 pts</span></label>
+    <button type="button" class="play" id="play">▶ Play story</button>
   </div>
-  <div class="wrap ctl2"><button type="button" class="play" id="play">▶ Play story</button></div>
 </div>
 
 <main class="stage">
@@ -189,6 +191,7 @@
     <span>Prototype for the Tableau rebuild · Analysis and design: Abhinav KR</span>
   </footer>
 </main>
+</div>
 <pre id="selftest"></pre>
 <script>
 (() => {
@@ -221,6 +224,7 @@
     { view: "radar", selected: "" }, { view: "swarm", selected: "" }, { view: "map", selected: "India" }];
 
   /* ---------------- state ---------------- */
+  let FIT = 1;   // page scale, set by fit()
   const state = { view: "gap", order: "gap", selected: "", scenario: 0, base: PREVIEW, live: false, playing: false, step: 0 };
   { const q = new URLSearchParams(location.search);   // deep links: ?view=radar&spot=China&scenario=5&order=ratio
     if (VIEWS.some(v => v.id === q.get("view"))) state.view = q.get("view");
@@ -367,8 +371,8 @@
       <div class="r"><span>E-books${state.scenario ? " (scenario)" : ""}</span><span>${pct(d.ebook)}</span></div>
       <div class="r"><span>Print lead</span><span>${f1(d.gap)} pts</span></div><div class="r"><span>E-book per 10 print</span><span>${f1(d.ratio)}</span></div>`;
     tip.classList.add("on");
-    const b = chart.getBoundingClientRect(); let x = e.clientX - b.left + 14, y = e.clientY - b.top - 10;
-    if (x + 200 > b.width) x -= 220; tip.style.left = x + "px"; tip.style.top = Math.max(0, y - tip.offsetHeight) + "px";
+    const b = chart.getBoundingClientRect(); let x = (e.clientX - b.left) / FIT + 14, y = (e.clientY - b.top) / FIT - 10;
+    if (x + 200 > chart.clientWidth) x -= 220; tip.style.left = x + "px"; tip.style.top = Math.max(0, y - tip.offsetHeight) + "px";
   }
   const hideTip = () => tip.classList.remove("on");
   const key = d => (d.row || d).c;
@@ -385,6 +389,7 @@
     svg = d3.select(chart).selectAll("svg").data([0]).join("svg").attr("width", W).attr("height", H);
     if (viewChanged || lastView !== state.view) { svg.selectAll("*").interrupt().remove(); lastView = state.view; }
     ({ gap: drawGap, bump: drawBump, gauges: drawGauges, radar: drawRadar, swarm: drawSwarm, map: drawMap })[state.view](r, W, H);
+    fit();
   }
   const layer = cls => svg.selectAll("g." + cls).data([0]).join(en => en.append("g").classed(cls, true));
 
@@ -633,7 +638,14 @@
     setStatus("Preview data");
     render(true);
   }
-  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => render(true), 120); });
+  // scale the 1200px page to fit the viewport (both directions), centred horizontally
+  function fit() {
+    const page = document.getElementById("page"), h = page.scrollHeight;
+    FIT = Math.min(window.innerWidth / 1120, window.innerHeight / h) || 1;
+    page.style.transform = "scale(" + FIT + ")";
+    page.style.left = Math.max(0, (window.innerWidth - 1120 * FIT) / 2) + "px";
+  }
+  fit(); window.addEventListener("resize", fit);
 
   /* ---------------- self-test (?selftest=1): every view renders; mark counts stable after 20 slider/order changes ---------------- */
   if (/selftest=1/.test(location.search)) {
