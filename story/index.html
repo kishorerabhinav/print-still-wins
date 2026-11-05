@@ -100,8 +100,8 @@
   .ins .show:hover { color: var(--print); }
   .ins .v { font: 700 19px/1.15 var(--serif); margin: 4px 0 4px; }
   .ins .t { font-size: 10.5px; color: var(--ink2); line-height: 1.4; }
-  .foot span:last-child { white-space: nowrap; }
-  .foot { flex: none; display: flex; justify-content: space-between; gap: 16px; border-top: 1px solid var(--rule); margin-top: 10px; padding: 7px 0 4px; font-size: 9.5px; color: var(--ink3); }
+  .foot { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--rule); margin-top: 10px; padding: 8px 0 6px; font-size: 9.5px; line-height: 1.4; color: var(--ink3); white-space: nowrap; }
+  .foot b { color: var(--ink); font-weight: 700; }
 
   /* svg text */
   .tk { font: 9px var(--sans); fill: var(--ink3); }
@@ -189,8 +189,8 @@
   </div>
   <div class="wrap insights" id="insights"></div>
   <footer class="wrap foot">
-    <span>Data: Statista, 2020 consumer survey. Share of population who bought at least one book in each format. Averages are simple means of the ten markets.</span>
-    <span>A test case for the Tableau Arsenal skills · by Abhinav KR</span>
+    <span>Data: Statista 2020 consumer survey. Share of people who bought at least one book in each format; averages are simple means.</span>
+    <span>A test case for the Tableau Arsenal skills by <b>Abhinav KR</b></span>
   </footer>
 </main>
 </div>
