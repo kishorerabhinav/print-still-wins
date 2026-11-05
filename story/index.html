@@ -222,10 +222,10 @@
   const short = c => SHORT[c] || c, code = c => CODE[c] || c.slice(0, 2).toUpperCase();
   const C = { print: "#1a71b2", ebook: "#2a9d4e", ink: "#121820", ink2: "#4a5563", ink3: "#7b8594", grid: "#e9ecef", track: "#e3e7ec", zone: "#e6f4ea", ray: "#a9cbe6" };
   const VIEWS = [
-    { id: "gap", name: "Gap race" }, { id: "bump", name: "Rank bump" }, { id: "gauges", name: "Parity gauges" },
+    { id: "gauges", name: "Parity gauges" }, { id: "gap", name: "Gap race" }, { id: "bump", name: "Rank bump" },
     { id: "radar", name: "Radar" }, { id: "swarm", name: "Beeswarm" }, { id: "map", name: "Distance map" }];
   const STORY = [
-    { view: "gap", selected: "" }, { view: "bump", selected: "Germany" }, { view: "gauges", selected: "China" },
+    { view: "gauges", selected: "China" }, { view: "gap", selected: "" }, { view: "bump", selected: "Germany" },
     { view: "radar", selected: "" }, { view: "swarm", selected: "" }, { view: "map", selected: "India" }];
 
   /* ---------------- state ---------------- */
