@@ -9,9 +9,11 @@
           --print:#1a71b2; --ebook:#2a9d4e; --warn:#b42318;
           --serif: Georgia, "Times New Roman", serif; --sans: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: #fff; color: var(--ink); font: 13px/1.45 var(--sans); overflow: hidden; height: 100%; }
-  #page { width: 1120px; transform-origin: 0 0; position: absolute; left: 0; top: 0; background: #fff; }
-  .wrap { width: 1072px; margin: 0 auto; }
+  html, body { margin: 0; background: var(--bg2); color: var(--ink); font: 13px/1.45 var(--sans); }
+  html { overflow-x: hidden; overflow-y: auto; }
+  body { position: relative; }
+  #page { width: 800px; transform-origin: 0 0; position: absolute; left: 0; top: 0; background: #fff; }
+  .wrap { width: 760px; margin: 0 auto; }
   button { font-family: inherit; }
 
   /* top bar */
@@ -27,39 +29,39 @@
   .tprog > div { height: 100%; width: 0; background: var(--print); transition: width .25s linear; }
 
   /* hero */
-  .hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; padding: 14px 0 16px; }
+  .hero { padding: 16px 0 18px; }
   .eyebrow { font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
   .eyebrow b { color: var(--print); margin-right: 8px; }
   h1 { font: 700 30px/1.08 var(--serif); margin: 6px 0 8px; letter-spacing: -.01em; }
   h1 em { color: var(--print); }
   .lead { font: 14px/1.45 var(--serif); color: var(--ink2); margin: 0; max-width: 520px; }
-  .kpis { display: flex; background: var(--bg2); border: 1px solid var(--rule); border-radius: 6px; flex: none; }
-  .kpi { width: 112px; padding: 9px 12px 10px; border-left: 1px solid var(--rule); }
+  .kpis { display: flex; background: var(--bg2); border: 1px solid var(--rule); border-radius: 6px; margin-top: 18px; }
+  .kpi { flex: 1; padding: 12px 13px 13px; border-left: 1px solid var(--rule); }
   .kpi:first-child { border-left: 0; }
   .kpi .v { font: 700 21px/1.1 var(--serif); }
   .kpi .l { font-size: 10px; line-height: 1.3; color: var(--ink2); margin-top: 3px; }
 
   /* controls */
   .ctlband { border-top: 1px solid var(--rule); }
-  .ctl { display: flex; align-items: center; gap: 10px; padding: 10px 0; white-space: nowrap; }
-  .ctl2 { display: flex; justify-content: flex-end; padding: 8px 0 10px; }
+  .ctl { display: flex; align-items: center; gap: 14px; padding: 12px 0 0; white-space: nowrap; }
+  .ctl2 { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 12px; }
   .seg { display: flex; background: var(--chip); border-radius: 7px; padding: 3px; }
-  .tab { font-size: 11px; font-weight: 500; color: var(--ink2); background: none; border: 1.5px solid transparent; border-radius: 5px; padding: 5px 7px; cursor: pointer; white-space: nowrap; }
+  .tab { font-size: 11px; font-weight: 500; color: var(--ink2); background: none; border: 1.5px solid transparent; border-radius: 5px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
   .tab:hover { color: var(--ink); }
   .tab[aria-pressed="true"] { background: #fff; color: var(--ink); border-color: var(--print); font-weight: 600; }
   .lbl { font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink3); }
-  select { font: 11px var(--sans); color: var(--ink); padding: 5px 6px; border: 1px solid var(--rule); border-radius: 5px; background: #fff; width: 112px; }
-  .pill { display: flex; align-items: center; gap: 7px; border: 1px solid var(--rule); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--ink2); }
-  input[type=range] { width: 80px; accent-color: var(--ebook); margin: 0; }
+  select { font: 11px var(--sans); color: var(--ink); padding: 5px 6px; border: 1px solid var(--rule); border-radius: 5px; background: #fff; width: 126px; }
+  .pill { display: flex; align-items: center; gap: 8px; border: 1px dashed #c9d0d7; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--ink2); }
+  input[type=range] { width: 110px; accent-color: var(--ebook); margin: 0; }
   #scenv { font-weight: 700; color: var(--ebook); min-width: 42px; }
   #scenv.on { color: var(--warn); }
-  .play { margin-left: auto; font-size: 11px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; min-width: 88px; }
+  .play { font-size: 11px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; min-width: 88px; }
 
   /* stage */
-  .stage { background: var(--bg2); padding: 14px 0 6px; }
-  .grid { display: flex; gap: 12px; align-items: stretch; }
+  .stage { background: var(--bg2); padding: 14px 0 10px; }
+  .grid { display: flex; flex-direction: column; gap: 12px; }
   .card { background: #fff; border: 1px solid var(--rule); border-radius: 6px; }
-  .main { flex: 1; min-width: 0; padding: 14px 16px 10px; display: flex; flex-direction: column; height: 626px; }
+  .main { flex: none; min-width: 0; padding: 14px 16px 10px; display: flex; flex-direction: column; height: 500px; }
   .chead { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex: none; }
   h2 { font: 700 17px/1.2 var(--serif); margin: 0; }
   .sub { font-size: 10.5px; color: var(--ink3); margin: 4px 0 0; }
@@ -75,14 +77,14 @@
   #note p { margin: 0 0 10px; }
   .err { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 30px; color: var(--warn); font: 12px/1.5 Consolas, monospace; white-space: pre-wrap; background: rgba(255,255,255,.94); z-index: 5; }
 
-  .side { width: 290px; flex: none; padding: 16px 18px 14px; }
+  .side { padding: 16px 18px 14px; display: grid; grid-template-columns: 1.05fr 1fr 1fr; gap: 0 22px; }
   .side h3 { font: 700 19px/1.2 var(--serif); margin: 4px 0 6px; }
   .side .txt { font: 12px/1.45 var(--serif); color: var(--ink2); margin: 0 0 14px; }
   .bars .b { display: grid; grid-template-columns: 50px 1fr 38px; align-items: center; gap: 8px; font-size: 10px; color: var(--ink2); margin-bottom: 6px; }
   .bars .b .t { height: 6px; background: var(--chip); border-radius: 3px; overflow: hidden; }
   .bars .b .t div { height: 100%; border-radius: 3px; transition: width .5s; }
   .bars .b span:last-child { text-align: right; font-weight: 700; color: var(--ink); }
-  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 12px 0; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 12px 0 0; }
   .tile { background: var(--bg2); border-radius: 4px; padding: 7px 7px 6px; min-height: 52px; }
   .tile .v { font: 700 16px/1.1 var(--serif); }
   .tile .l { font-size: 9px; color: var(--ink2); line-height: 1.25; margin-top: 3px; }
@@ -93,13 +95,13 @@
   .help { font-size: 9.5px; color: var(--ink3); margin: 10px 0 0; }
   .stag { display: inline-block; font-size: 8.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--warn); margin-bottom: 4px; }
 
-  .insights { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+  .insights { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
   .ins { padding: 10px 12px 11px; position: relative; }
   .ins .show { position: absolute; right: 10px; top: 8px; font-size: 9.5px; color: var(--ink2); background: none; border: 0; cursor: pointer; padding: 0; }
   .ins .show:hover { color: var(--print); }
   .ins .v { font: 700 19px/1.15 var(--serif); margin: 4px 0 4px; }
   .ins .t { font-size: 10.5px; color: var(--ink2); line-height: 1.4; }
-  .foot { display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid var(--rule); margin-top: 14px; padding: 9px 0 6px; font-size: 9.5px; color: var(--ink3); }
+  .foot { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--rule); margin-top: 14px; padding: 9px 0 6px; font-size: 9.5px; color: var(--ink3); }
 
   /* svg text */
   .tk { font: 9px var(--sans); fill: var(--ink3); }
@@ -140,7 +142,7 @@
 <header class="wrap hero">
   <div>
     <div class="eyebrow"><b>Consumer behaviour</b>10 markets · 2020 survey</div>
-    <h1>E-books still no match<br>for <em>printed</em> books</h1>
+    <h1>E-books still no match for <em>printed</em> books</h1>
     <p class="lead">In every one of ten major book markets, more people bought a printed book than an e-book in 2020. The gap is widest in Western Europe and narrowest in East Asia.</p>
   </div>
   <div class="kpis" id="kpis"></div>
@@ -154,6 +156,8 @@
       <option value="gap">Print lead</option><option value="print">Print share</option><option value="ebook">E-book share</option>
       <option value="ratio">Closest to parity</option><option value="az">Market A–Z</option>
     </select>
+  </div>
+  <div class="wrap ctl2">
     <label class="pill"><span class="lbl">Scenario</span><span>What if e-book share rose by</span>
       <input type="range" id="scen" min="0" max="15" step="1" value="0"><span id="scenv">+0 pts</span></label>
     <button type="button" class="play" id="play">▶ Play story</button>
@@ -173,16 +177,16 @@
       </div>
     </section>
     <aside class="card side" id="side">
-      <div class="lbl" id="o-k">Overview</div>
+      <div><div class="lbl" id="o-k">Overview</div>
       <h3 id="o-t">10-market average</h3>
-      <p class="txt" id="o-x"></p>
-      <div class="bars">
+      <p class="txt" id="o-x"></p></div>
+      <div><div class="bars">
         <div class="b"><span>Printed</span><div class="t"><div id="o-bp" style="background:var(--print)"></div></div><span id="o-vp"></span></div>
         <div class="b"><span>E-books</span><div class="t"><div id="o-be" style="background:var(--ebook)"></div></div><span id="o-ve"></span></div>
       </div>
-      <div class="tiles" id="tiles"></div>
-      <div class="chips" id="chips"></div>
-      <p class="help">Click any market in a chart or here. Click it again to clear.</p>
+      <div class="tiles" id="tiles"></div></div>
+      <div><div class="chips" id="chips"></div>
+      <p class="help">Click any market in a chart or here. Click it again to clear.</p></div>
     </aside>
   </div>
   <div class="wrap insights" id="insights"></div>
@@ -641,9 +645,9 @@
   // scale the 1200px page to fit the viewport (both directions), centred horizontally
   function fit() {
     const page = document.getElementById("page"), h = page.scrollHeight;
-    FIT = Math.min(window.innerWidth / 1120, window.innerHeight / h) || 1;
+    FIT = (document.documentElement.clientWidth || window.innerWidth) / 800 || 1;
     page.style.transform = "scale(" + FIT + ")";
-    page.style.left = Math.max(0, (window.innerWidth - 1120 * FIT) / 2) + "px";
+    document.body.style.height = Math.ceil(h * FIT) + "px";
   }
   fit(); window.addEventListener("resize", fit);
 
