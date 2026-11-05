@@ -41,19 +41,20 @@
 
   /* controls */
   .ctlband { border-top: 1px solid var(--rule); }
-  .ctl { display: flex; align-items: center; gap: 14px; padding: 9px 0 0; white-space: nowrap; }
-  .ctl2 { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 9px; }
+  .ctl { display: flex; align-items: center; gap: 14px; padding: 10px 0; white-space: nowrap; }
   .seg { display: flex; background: var(--chip); border-radius: 7px; padding: 3px; }
   .tab { font-size: 11px; font-weight: 500; color: var(--ink2); background: none; border: 1.5px solid transparent; border-radius: 5px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
   .tab:hover { color: var(--ink); }
   .tab[aria-pressed="true"] { background: #fff; color: var(--ink); border-color: var(--print); font-weight: 600; }
   .lbl { font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink3); }
   select { font: 11px var(--sans); color: var(--ink); padding: 5px 6px; border: 1px solid var(--rule); border-radius: 5px; background: #fff; width: 126px; }
-  .pill { display: flex; align-items: center; gap: 8px; border: 1px dashed #c9d0d7; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--ink2); }
+  .pill { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 8px; border: 1px dashed #c9d0d7; border-radius: 6px; padding: 9px 10px 10px; font-size: 11px; color: var(--ink2); background: #fafbfc; }
+  .pill .lbl, .pill .q { grid-column: 1 / -1; }
+  .pill input[type=range] { width: 100%; }
   input[type=range] { width: 110px; accent-color: var(--ebook); margin: 0; }
   #scenv { font-weight: 700; color: var(--ebook); min-width: 42px; }
   #scenv.on { color: var(--warn); }
-  .play { font-size: 11px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; min-width: 88px; }
+  .play { margin-left: auto; font-size: 11px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; min-width: 88px; }
 
   /* stage */
   .stage { background: var(--bg2); padding: 12px 0 6px; flex: 1; min-height: 0; display: flex; flex-direction: column; }
@@ -155,10 +156,6 @@
       <option value="gap">Print lead</option><option value="print">Print share</option><option value="ebook">E-book share</option>
       <option value="ratio">Closest to parity</option><option value="az">Market A–Z</option>
     </select>
-  </div>
-  <div class="wrap ctl2">
-    <label class="pill"><span class="lbl">Scenario</span><span>What if e-book share rose by</span>
-      <input type="range" id="scen" min="0" max="15" step="1" value="0"><span id="scenv">+0 pts</span></label>
     <button type="button" class="play" id="play">▶ Play story</button>
   </div>
 </div>
@@ -176,6 +173,8 @@
       </div>
     </section>
     <aside class="card side" id="side">
+      <label class="pill"><span class="lbl">Scenario</span><span class="q">What if e-book share rose by</span>
+        <input type="range" id="scen" min="0" max="15" step="1" value="0"><span id="scenv">+0 pts</span></label>
       <div><div class="lbl" id="o-k">Overview</div>
       <h3 id="o-t">10-market average</h3>
       <p class="txt" id="o-x"></p></div>
