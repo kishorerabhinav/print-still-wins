@@ -628,7 +628,7 @@
     catch (e) { setStatus("Data error"); showError("Could not load data: " + e.message); }
   }
   fit();
-  const inTableau = window.parent !== window && window.tableau && tableau.extensions && !/preview=1/.test(location.search);
+  const inTableau = window.parent !== window && window.tableau && tableau.extensions && !/preview=1|embed=1/.test(location.search);
   if (inTableau) {
     setStatus("");
     tableau.extensions.initializeAsync().then(() => {
@@ -637,7 +637,7 @@
       refresh();
     }, e => { setStatus("Data error"); showError("Extensions API failed to initialise: " + e.message); });
   } else {
-    setStatus("Preview data");
+    setStatus(/embed=1/.test(location.search) ? "" : "Preview data");   // embed=1: Web Page object on Tableau Public, survey data built in
     render(true);
   }
   // scale the 1200px page to fit the viewport (both directions), centred horizontally
