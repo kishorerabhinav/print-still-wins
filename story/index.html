@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Print Still Wins · Story</title>
+<style>
+  :root { --ink:#121820; --ink2:#4a5563; --ink3:#7b8594; --rule:#e3e6ea; --bg2:#f3f4f6; --chip:#eef0f3;
+          --print:#1a71b2; --ebook:#2a9d4e; --warn:#b42318;
+          --serif: Georgia, "Times New Roman", serif; --sans: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--ink); font: 13px/1.45 var(--sans); }
+  .wrap { width: 1040px; margin: 0 auto; }
+  button { font-family: inherit; }
+
+  /* top bar */
+  .top { border-bottom: 1px solid var(--rule); position: relative; }
+  .topin { display: flex; justify-content: space-between; align-items: center; height: 30px; font-size: 10.5px; color: var(--ink2); }
+  .crumb b { color: var(--ink); letter-spacing: .04em; }
+  .crumb .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); background: linear-gradient(90deg, var(--ink) 50%, #fff 50%); vertical-align: -1px; margin-right: 5px; }
+  #src { margin-left: 8px; color: var(--ink3); }
+  #src.live { color: var(--ebook); }
+  .topk b { color: var(--ink); }
+  .topk .p { color: var(--print); } .topk .e { color: var(--ebook); }
+  .tprog { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; }
+  .tprog > div { height: 100%; width: 0; background: var(--print); transition: width .25s linear; }
+
+  /* hero */
+  .hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; padding: 14px 0 16px; }
+  .eyebrow { font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
+  .eyebrow b { color: var(--print); margin-right: 8px; }
+  h1 { font: 700 30px/1.08 var(--serif); margin: 6px 0 8px; letter-spacing: -.01em; }
+  h1 em { color: var(--print); }
+  .lead { font: 14px/1.45 var(--serif); color: var(--ink2); margin: 0; max-width: 520px; }
+  .kpis { display: flex; background: var(--bg2); border: 1px solid var(--rule); border-radius: 6px; flex: none; }
+  .kpi { width: 112px; padding: 9px 12px 10px; border-left: 1px solid var(--rule); }
+  .kpi:first-child { border-left: 0; }
+  .kpi .v { font: 700 21px/1.1 var(--serif); }
+  .kpi .l { font-size: 10px; line-height: 1.3; color: var(--ink2); margin-top: 3px; }
+
+  /* controls */
+  .ctlband { border-top: 1px solid var(--rule); }
+  .ctl { display: flex; align-items: center; gap: 12px; padding: 10px 0 0; white-space: nowrap; }
+  .ctl2 { display: flex; justify-content: flex-end; padding: 8px 0 10px; }
+  .seg { display: flex; background: var(--chip); border-radius: 7px; padding: 3px; }
+  .tab { font-size: 11px; font-weight: 500; color: var(--ink2); background: none; border: 1.5px solid transparent; border-radius: 5px; padding: 5px 8px; cursor: pointer; white-space: nowrap; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-pressed="true"] { background: #fff; color: var(--ink); border-color: var(--print); font-weight: 600; }
+  .lbl { font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink3); }
+  select { font: 11px var(--sans); color: var(--ink); padding: 5px 6px; border: 1px solid var(--rule); border-radius: 5px; background: #fff; width: 120px; }
+  .pill { display: flex; align-items: center; gap: 8px; border: 1px solid var(--rule); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--ink2); }
+  input[type=range] { width: 92px; accent-color: var(--ebook); margin: 0; }
+  #scenv { font-weight: 700; color: var(--ebook); min-width: 42px; }
+  #scenv.on { color: var(--warn); }
+  .play { font-size: 11px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; min-width: 88px; }
+
+  /* stage */
+  .stage { background: var(--bg2); padding: 14px 0 6px; }
+  .grid { display: flex; gap: 12px; align-items: stretch; }
+  .card { background: #fff; border: 1px solid var(--rule); border-radius: 6px; }
+  .main { flex: 1; min-width: 0; padding: 14px 16px 10px; display: flex; flex-direction: column; height: 448px; }
+  .chead { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex: none; }
+  h2 { font: 700 17px/1.2 var(--serif); margin: 0; }
+  .sub { font-size: 10.5px; color: var(--ink3); margin: 4px 0 0; }
+  .legend { display: flex; gap: 12px; font-size: 10px; color: var(--ink2); white-space: nowrap; padding-top: 3px; }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+  .legend i.ring { border: 1.5px solid #c9d0d7; }
+  .legend.under { padding-top: 8px; }
+  .body { display: flex; gap: 12px; margin-top: 10px; flex: 1; min-height: 0; }
+  #chart { position: relative; flex: 1; min-width: 0; }
+  #chart svg { display: block; overflow: visible; }
+  #note { width: 200px; flex: none; font-size: 11px; line-height: 1.6; color: var(--ink2); padding-top: 34px; display: none; }
+  #note b { color: var(--ink); display: block; margin-bottom: 2px; }
+  #note p { margin: 0 0 10px; }
+  .err { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 30px; color: var(--warn); font: 12px/1.5 Consolas, monospace; white-space: pre-wrap; background: rgba(255,255,255,.94); z-index: 5; }
+
+  .side { width: 290px; flex: none; padding: 16px 18px 14px; }
+  .side h3 { font: 700 19px/1.2 var(--serif); margin: 4px 0 6px; }
+  .side .txt { font: 12px/1.45 var(--serif); color: var(--ink2); margin: 0 0 14px; }
+  .bars .b { display: grid; grid-template-columns: 50px 1fr 38px; align-items: center; gap: 8px; font-size: 10px; color: var(--ink2); margin-bottom: 6px; }
+  .bars .b .t { height: 6px; background: var(--chip); border-radius: 3px; overflow: hidden; }
+  .bars .b .t div { height: 100%; border-radius: 3px; transition: width .5s; }
+  .bars .b span:last-child { text-align: right; font-weight: 700; color: var(--ink); }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 12px 0; }
+  .tile { background: var(--bg2); border-radius: 4px; padding: 7px 7px 6px; min-height: 52px; }
+  .tile .v { font: 700 16px/1.1 var(--serif); }
+  .tile .l { font-size: 9px; color: var(--ink2); line-height: 1.25; margin-top: 3px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { font-size: 9.5px; color: var(--ink2); background: #fff; border: 1px solid var(--rule); border-radius: 11px; padding: 2px 8px; cursor: pointer; }
+  .chip:hover { border-color: var(--print); color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--print); border-color: var(--print); color: #fff; }
+  .help { font-size: 9.5px; color: var(--ink3); margin: 10px 0 0; }
+  .stag { display: inline-block; font-size: 8.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--warn); margin-bottom: 4px; }
+
+  .insights { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+  .ins { padding: 10px 12px 11px; position: relative; }
+  .ins .show { position: absolute; right: 10px; top: 8px; font-size: 9.5px; color: var(--ink2); background: none; border: 0; cursor: pointer; padding: 0; }
+  .ins .show:hover { color: var(--print); }
+  .ins .v { font: 700 19px/1.15 var(--serif); margin: 4px 0 4px; }
+  .ins .t { font-size: 10.5px; color: var(--ink2); line-height: 1.4; }
+  .foot { display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid var(--rule); margin-top: 14px; padding: 9px 0 6px; font-size: 9.5px; color: var(--ink3); }
+
+  /* svg text */
+  .tk { font: 9px var(--sans); fill: var(--ink3); }
+  .nm { font: 600 10.5px var(--sans); fill: var(--ink); }
+  .gnum { font: 700 19px var(--sans); fill: var(--ink); }
+  .val { font: 9.5px var(--sans); fill: var(--ink2); }
+  .gl { font: 700 8.5px var(--sans); fill: var(--ink2); }
+  .hd { font: 700 9px var(--sans); fill: var(--ink); letter-spacing: .06em; text-transform: uppercase; }
+  .big { font: 700 19px var(--serif); fill: var(--ink); }
+  .cap { font: 700 7.5px var(--sans); fill: var(--ink3); letter-spacing: .08em; }
+  .code { font: 700 8px var(--sans); fill: #fff; pointer-events: none; }
+  .zt { font: 700 9px var(--sans); fill: var(--ebook); }
+  .zs { font: 9px var(--sans); fill: var(--ink2); }
+  .mk { cursor: pointer; }
+  .dim { opacity: .2; }
+
+  .tip { position: absolute; pointer-events: none; background: var(--ink); color: #fff; border-radius: 6px; padding: 8px 10px; font: 11px/1.5 var(--sans); min-width: 180px; opacity: 0; transition: opacity .12s; z-index: 6; }
+  .tip.on { opacity: 1; }
+  .tip b { display: block; font-size: 12px; margin-bottom: 2px; }
+  .tip .r { display: flex; justify-content: space-between; gap: 14px; }
+  .tip .r span:first-child { opacity: .7; }
+  #selftest { display: none; }
+</style>
+<!-- Extensions API first, then D3, then the page script (both vendored, no CDN at runtime) -->
+<script src="tableau.extensions.1.latest.min.js"></script>
+<script src="d3.v7.8.5.min.js"></script>
+</head>
+<body>
+<div class="top">
+  <div class="wrap topin">
+    <span class="crumb"><span class="dot"></span><b>READING HABITS</b> / DATA STORY<span id="src">· Loading…</span></span>
+    <span class="topk" id="topk"></span>
+  </div>
+  <div class="tprog"><div id="prog"></div></div>
+</div>
+
+<header class="wrap hero">
+  <div>
+    <div class="eyebrow"><b>Consumer behaviour</b>10 markets · 2020 survey</div>
+    <h1>E-books still no match<br>for <em>printed</em> books</h1>
+    <p class="lead">In every one of ten major book markets, more people bought a printed book than an e-book in 2020. The gap is widest in Western Europe and narrowest in East Asia.</p>
+  </div>
+  <div class="kpis" id="kpis"></div>
+</header>
+
+<div class="ctlband">
+  <div class="wrap ctl">
+    <div class="seg" id="tabs" role="group" aria-label="View"></div>
+    <span class="lbl" id="l-ord">Order by</span>
+    <select id="ord" aria-labelledby="l-ord">
+      <option value="gap">Print lead</option><option value="print">Print share</option><option value="ebook">E-book share</option>
+      <option value="ratio">Closest to parity</option><option value="az">Market A–Z</option>
+    </select>
+    <label class="pill"><span class="lbl">Scenario</span><span>What if e-book share rose by</span>
+      <input type="range" id="scen" min="0" max="15" step="1" value="0"><span id="scenv">+0 pts</span></label>
+  </div>
+  <div class="wrap ctl2"><button type="button" class="play" id="play">▶ Play story</button></div>
+</div>
+
+<main class="stage">
+  <div class="wrap grid">
+    <section class="card main">
+      <div class="chead">
+        <div><h2 id="ctitle"></h2><p class="sub" id="csub"></p><div class="legend under" id="legend2"></div></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="body">
+        <div id="chart"><div class="tip" id="tip"></div><div class="err" id="err"></div></div>
+        <div id="note"></div>
+      </div>
+    </section>
+    <aside class="card side" id="side">
+      <div class="lbl" id="o-k">Overview</div>
+      <h3 id="o-t">10-market average</h3>
+      <p class="txt" id="o-x"></p>
+      <div class="bars">
+        <div class="b"><span>Printed</span><div class="t"><div id="o-bp" style="background:var(--print)"></div></div><span id="o-vp"></span></div>
+        <div class="b"><span>E-books</span><div class="t"><div id="o-be" style="background:var(--ebook)"></div></div><span id="o-ve"></span></div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+      <div class="chips" id="chips"></div>
+      <p class="help">Click any market in a chart or here. Click it again to clear.</p>
+    </aside>
+  </div>
+  <div class="wrap insights" id="insights"></div>
+  <footer class="wrap foot">
+    <span>Data: Statista, 2020 consumer survey. Share of population who bought at least one book in each format. Averages are simple means of the ten markets.</span>
+    <span>Prototype for the Tableau rebuild · Analysis and design: Abhinav KR</span>
+  </footer>
+</main>
+<pre id="selftest"></pre>
+<script>
+(() => {
+  "use strict";
+  const ERRORS = [];
+  window.addEventListener("error", e => ERRORS.push(String(e.message)));
+
+  // ?static=1 (screenshots only): transitions jump to their end state, since headless browsers throttle animation frames
+  if (/static=1/.test(location.search)) {
+    d3.selection.prototype.transition = function () { return this; };
+    d3.selection.prototype.ease = d3.selection.prototype.duration = d3.selection.prototype.delay = function () { return this; };
+  }
+
+  /* ---------------- configuration ---------------- */
+  const FEED_SHEET = "Fig 1 Print vs E-book";
+  const FIELDS = { country: "Country", format: "Format", share: "SUM(Share)" };   // matched by fieldName, never by position
+  const PREVIEW = [ // preview only (normal browser); never presented as the workbook's numbers
+    ["Germany", 58.0, 10.4], ["France", 52.1, 7.5], ["Spain", 49.3, 14.3], ["United Kingdom", 48.7, 20.0], ["Australia", 41.2, 15.9],
+    ["Japan", 40.1, 17.3], ["United States", 44.5, 22.7], ["India", 24.5, 5.6], ["South Korea", 34.6, 16.8], ["China", 32.0, 24.4]
+  ].map(([c, p, e]) => ({ c, print: p, ebook: e }));
+  const SHORT = { "United Kingdom": "UK", "United States": "US", "South Korea": "S. Korea" };
+  const CODE = { Germany: "DE", France: "FR", Spain: "ES", "United Kingdom": "UK", Australia: "AU", Japan: "JP", "United States": "US", India: "IN", "South Korea": "KR", China: "CN" };
+  const short = c => SHORT[c] || c, code = c => CODE[c] || c.slice(0, 2).toUpperCase();
+  const C = { print: "#1a71b2", ebook: "#2a9d4e", ink: "#121820", ink2: "#4a5563", ink3: "#7b8594", grid: "#e9ecef", track: "#e3e7ec", zone: "#e6f4ea", ray: "#a9cbe6" };
+  const VIEWS = [
+    { id: "gap", name: "Gap race" }, { id: "bump", name: "Rank bump" }, { id: "gauges", name: "Parity gauges" },
+    { id: "radar", name: "Radar" }, { id: "swarm", name: "Beeswarm" }, { id: "map", name: "Distance map" }];
+  const STORY = [
+    { view: "gap", selected: "" }, { view: "bump", selected: "Germany" }, { view: "gauges", selected: "China" },
+    { view: "radar", selected: "" }, { view: "swarm", selected: "" }, { view: "map", selected: "India" }];
+
+  /* ---------------- state ---------------- */
+  const state = { view: "gap", order: "gap", selected: "", scenario: 0, base: PREVIEW, live: false, playing: false, step: 0 };
+  { const q = new URLSearchParams(location.search);   // deep links: ?view=radar&spot=China&scenario=5&order=ratio
+    if (VIEWS.some(v => v.id === q.get("view"))) state.view = q.get("view");
+    if (q.get("spot")) state.selected = q.get("spot");
+    if (["gap", "print", "ebook", "ratio", "az"].includes(q.get("order"))) state.order = q.get("order");
+    if (q.get("scenario")) state.scenario = Math.max(0, Math.min(15, +q.get("scenario") || 0)); }
+
+  // Every derived number comes from here; the scenario is applied to the data, never in drawing code.
+  function rows(scenario = state.scenario) {
+    const r = state.base.map(d => {
+      const ebook = d.ebook + scenario;
+      return { c: d.c, s: short(d.c), code: code(d.c), print: d.print, ebook, gap: d.print - ebook, ratio: ebook / d.print * 10 };
+    });
+    for (const k of ["print", "ebook", "gap", "ratio"]) [...r].sort((a, b) => b[k] - a[k]).forEach((d, i) => d["rank_" + k] = i + 1);
+    return r;
+  }
+  const ordered = r => state.order === "az" ? [...r].sort((a, b) => d3.ascending(a.c, b.c)) : [...r].sort((a, b) => b[state.order] - a[state.order]);
+  const f1 = d3.format(".1f"), pct = v => f1(v) + "%";
+  const avg = (r, k) => d3.mean(r, d => d[k]);
+  const ord = n => { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+  const WORD = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+
+  /* ---------------- controls ---------------- */
+  const tabs = d3.select("#tabs").selectAll("button").data(VIEWS, d => d.id).join("button")
+    .classed("tab", true).attr("type", "button").text(d => d.name)
+    .on("click", (e, d) => { stopStory(); state.view = d.id; render(true); });
+  const ordEl = document.getElementById("ord"), scen = document.getElementById("scen"), scenv = document.getElementById("scenv");
+  ordEl.addEventListener("change", () => { stopStory(); state.order = ordEl.value; render(false); });
+  scen.addEventListener("input", () => { stopStory(); state.scenario = +scen.value; render(false); });
+  const play = document.getElementById("play"), prog = document.getElementById("prog");
+  play.addEventListener("click", () => state.playing ? stopStory() : startStory());
+  function select(c) { stopStory(); state.selected = state.selected === c ? "" : c; render(false); }
+
+  /* ---------------- story ---------------- */
+  const STEP_MS = 6500; let timer = null, stepStart = 0;
+  function startStory() {
+    state.playing = true; state.scenario = 0; play.textContent = "❚❚ Pause"; state.step = 0; applyStep();
+    timer = d3.interval(() => {
+      if (Date.now() - stepStart >= STEP_MS) { state.step = (state.step + 1) % STORY.length; applyStep(); }
+      prog.style.width = ((state.step + Math.min(1, (Date.now() - stepStart) / STEP_MS)) / STORY.length * 100) + "%";
+    }, 100);
+  }
+  function applyStep() { Object.assign(state, STORY[state.step]); stepStart = Date.now(); render(true); }
+  function stopStory() { if (!state.playing) return; state.playing = false; if (timer) timer.stop(); timer = null; play.textContent = "▶ Play story"; syncProgress(); }
+  function syncProgress() { if (!state.playing) prog.style.width = ((VIEWS.findIndex(v => v.id === state.view) + 1) / VIEWS.length * 100) + "%"; }
+
+  /* ---------------- page parts around the chart (computed from the data) ---------------- */
+  function renderPage(r) {
+    const b = rows(0), P = avg(b, "print"), E = avg(b, "ebook"), lead = b.filter(d => d.gap > 0).length, par = b.length - lead;
+    document.getElementById("topk").innerHTML = `<b class="p">${pct(P)}</b> buy print · <b class="e">${pct(E)}</b> buy e-books · Print leads in <b>${lead === b.length ? "all " + lead : lead + " of " + b.length}</b> markets`;
+    document.getElementById("kpis").innerHTML = [
+      [pct(P), "bought a printed book", C.print], [pct(E), "bought an e-book", C.ebook],
+      [`${f1(P / E)} : 1`, "print buyers per e-book buyer", C.ink], [`${par} of ${b.length}`, "markets at parity", C.ink]]
+      .map(([v, l, c]) => `<div class="kpi"><div class="v" style="color:${c}">${v}</div><div class="l">${l}</div></div>`).join("");
+    tabs.attr("aria-pressed", d => d.id === state.view);
+    ordEl.value = state.order; scen.value = state.scenario;
+    scenv.textContent = "+" + state.scenario + " pts"; scenv.classList.toggle("on", state.scenario > 0);
+    syncProgress();
+
+    // overview card (follows the scenario and the selected market)
+    const sel = r.find(d => d.c === state.selected), tag = state.scenario ? `<span class="stag">Scenario: e-books +${state.scenario} pts</span><br>` : "";
+    const P2 = sel ? sel.print : avg(r, "print"), E2 = sel ? sel.ebook : avg(r, "ebook");
+    document.getElementById("o-k").textContent = sel ? "Market" : "Overview";
+    document.getElementById("o-t").textContent = sel ? sel.c : `${r.length}-market average`;
+    const atPar = r.filter(d => d.ebook >= d.print).length;
+    document.getElementById("o-x").innerHTML = tag + (sel
+      ? (sel.gap > 0 ? `Print leads by ${f1(sel.gap)} points. ${sel.c} ranks ${ord(sel.rank_print)} on print share and ${ord(sel.rank_ratio)} on closeness to parity.`
+                     : `E-books lead by ${f1(-sel.gap)} points in this scenario.`)
+      : `Print buyers outnumber e-book buyers ${f1(P2 / E2)} to 1 on average. ${atPar ? `${atPar} market${atPar > 1 ? "s reach" : " reaches"} parity.` : "No market reaches parity."}`);
+    const bx = d3.scaleLinear().domain([0, 70]).range([0, 100]).clamp(true);
+    document.getElementById("o-bp").style.width = bx(P2) + "%"; document.getElementById("o-be").style.width = bx(E2) + "%";
+    document.getElementById("o-vp").textContent = pct(P2); document.getElementById("o-ve").textContent = pct(E2);
+    const tiles = sel
+      ? [[f1(sel.gap), "print lead, pts"], [f1(sel.ratio), "e-book per 10 print"], [ord(sel.rank_ratio), "closest to parity"]]
+      : [[f1(P2 - E2), "print lead, pts"], [f1(E2 / P2 * 10), "e-book per 10 print"], ["–", "select a market"]];
+    document.getElementById("tiles").innerHTML = tiles.map(([v, l]) => `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+    d3.select("#chips").selectAll("button").data([...r].sort((a, b) => d3.ascending(a.c, b.c)), d => d.c)
+      .join(en => en.append("button").classed("chip", true).attr("type", "button").on("click", (e, d) => select(d.c)))
+      .attr("aria-pressed", d => d.c === state.selected).text(d => d.s);
+
+    // insight cards (actual data, no scenario)
+    const top = [...b].sort((x, y) => y.gap - x.gap)[0], near = [...b].sort((x, y) => y.ratio - x.ratio)[0];
+    const low = [...b].sort((x, y) => x.print - y.print)[0], lowE = [...b].sort((x, y) => x.ebook - y.ebook)[0];
+    const frac = near.ratio % 1, nearWord = (frac >= .5 ? "almost " : "just over ") + WORD[frac >= .5 ? Math.ceil(near.ratio) : Math.floor(near.ratio)];
+    const cards = [
+      { k: "Markets", v: `${lead} of ${b.length}`, t: lead === b.length ? "Print leads in every market surveyed." : `Print leads in ${lead} markets.`, go: { view: "gap", selected: "" } },
+      { k: top.c, v: `${f1(top.gap)} pts`, t: `${top.c} has the widest print lead. It ranks ${ord(top.rank_print)} on print but ${ord(top.rank_ratio)} on parity.`, go: { view: "bump", selected: top.c } },
+      { k: `${near.s}, per 10`, v: f1(near.ratio), t: `${near.c} is nearest to parity, with ${nearWord} e-book buyers per ten print buyers.`, go: { view: "gauges", selected: near.c } },
+      { k: `${low.s}, print`, v: pct(low.print), t: low.c === lowE.c ? `${low.c}'s small gap reflects low book buying overall, not a shift to e-books.` : `${low.c} has the lowest print share of the ten markets.`, go: { view: "map", selected: low.c } }];
+    d3.select("#insights").selectAll("div.ins").data(cards).join(en => {
+      const e = en.append("div").classed("card ins", true);
+      e.append("button").classed("show", true).attr("type", "button").text("Show →");
+      e.append("div").classed("lbl", true); e.append("div").classed("v", true); e.append("div").classed("t", true); return e;
+    }).each(function (d) {
+      const s = d3.select(this); s.select(".lbl").text(d.k); s.select(".v").text(d.v); s.select(".t").text(d.t);
+      s.select(".show").on("click", () => { stopStory(); Object.assign(state, d.go); render(true); });
+    });
+  }
+
+  /* ---------------- chart header per view (computed) ---------------- */
+  function header(r) {
+    const by = k => [...r].sort((a, b) => b[k] - a[k]), cross = r.filter(d => d.ebook >= d.print);
+    const L = items => items.map(([c, t, ring]) => `<span><i class="${ring ? "ring" : ""}" style="background:${c}"></i>${t}</span>`).join("");
+    const both = L([[C.print, "Printed"], [C.ebook, "E-books"]]);
+    const p2 = by("print").slice(0, 2).map(d => d.s), r2 = by("ratio").slice(-2).map(d => d.s);
+    const close = r.filter(d => d.ratio >= 7), parN = r.filter(d => d.ratio >= 10).length, pl = n => n > 1 ? "s" : "";
+    const H = {
+      gap: [cross.length ? `In this scenario e-books overtake print in ${cross.length} market${pl(cross.length)}`
+              : `The print lead runs from ${Math.round(by("gap")[0].gap)} points to under ${Math.ceil(by("gap").slice(-1)[0].gap)}`,
+            "Share of population buying each format. The bar is the print lead.", both],
+      bump: ["Leaders in print are laggards in e-books",
+             p2.every(c => r2.includes(c)) ? `Each market's rank (1 = top) on four measures. ${p2.join(" and ")} go from the top two in print to the bottom two on parity.`
+               : "Each market's rank (1 = top) on four measures.",
+             L([["#0d4f80", "Selected market"], ["#c9d0d7", "Other markets"]])],
+      gauges: [parN ? `${parN} market${parN > 1 ? "s reach" : " reaches"} parity in this scenario`
+               : close.length === 0 ? "No market comes close to parity" : close.length === 1 ? `Only ${close[0].s} comes close to parity` : `${close.length} markets come close to parity`,
+               "E-book buyers per 10 print buyers. A full dial would mean as many e-book as print buyers.",
+               L([[C.ebook, "E-book buyers"], [C.track, "Gap to parity", true]])],
+      radar: [cross.length ? `E-books break through print's shape in ${cross.length} market${pl(cross.length)}` : "The print shape dwarfs the e-book shape everywhere",
+              "Share of population, 0 to 60%, one spoke per market, ordered by print share.", both],
+      swarm: [d3.max(r, d => d.ebook) < d3.min(r, d => d.print) ? "The two formats barely overlap" : "In this scenario the two formats overlap",
+              "Every market's share for each format on one axis. Dashed lines are the ten-market averages.", both],
+      map: [cross.length ? `${cross.length} market${cross.length > 1 ? "s cross" : " crosses"} the parity line` : "Every market sits below the parity line",
+            "Print share across, e-book share up, on the same scale. Steeper rays are closer to parity.",
+            L([[C.print, "Market"], [C.zone, "E-book majority zone", true]])],
+    }[state.view];
+    document.getElementById("ctitle").textContent = H[0];
+    document.getElementById("csub").textContent = H[1];
+    const under = state.view === "bump";
+    document.getElementById("legend").innerHTML = under ? "" : H[2];
+    document.getElementById("legend2").innerHTML = under ? H[2] : "";
+    const note = document.getElementById("note"), st = by("ratio");
+    note.style.width = "180px";
+    if (state.view === "radar") { note.style.display = "block"; note.innerHTML = `<p><b>How to read it</b>The blue shape is print, the green shape is e-books. ${cross.length ? "Where green passes blue, e-books lead." : "Green never reaches blue on any spoke."}</p><p>Spoke order is by print share, so the shape follows the ranking.</p>`; }
+    else if (false) { note.innerHTML = `<p><b>How to read it</b>Each ray runs from zero to a market. The steeper the ray, the closer that market is to parity. ${st[0].s}'s ray is steepest; ${st.slice(-1)[0].s}'s is flattest.</p><p>Drag the scenario slider to see how far e-book adoption would have to rise.</p>`; }
+    else note.style.display = "none";
+  }
+
+  /* ---------------- tooltip & selection ---------------- */
+  const tip = document.getElementById("tip"), chart = document.getElementById("chart");
+  function showTip(e, d) {
+    d = d.row || d;
+    tip.innerHTML = `<b>${d.c}</b><div class="r"><span>Printed books</span><span>${pct(d.print)}</span></div>
+      <div class="r"><span>E-books${state.scenario ? " (scenario)" : ""}</span><span>${pct(d.ebook)}</span></div>
+      <div class="r"><span>Print lead</span><span>${f1(d.gap)} pts</span></div><div class="r"><span>E-book per 10 print</span><span>${f1(d.ratio)}</span></div>`;
+    tip.classList.add("on");
+    const b = chart.getBoundingClientRect(); let x = e.clientX - b.left + 14, y = e.clientY - b.top - 10;
+    if (x + 200 > b.width) x -= 220; tip.style.left = x + "px"; tip.style.top = Math.max(0, y - tip.offsetHeight) + "px";
+  }
+  const hideTip = () => tip.classList.remove("on");
+  const key = d => (d.row || d).c;
+  const interact = sel => sel.classed("mk", true).on("mousemove", showTip).on("mouseleave", hideTip).on("click", (e, d) => select(key(d)))
+    .classed("dim", d => !!state.selected && key(d) !== state.selected);
+  const T = () => d3.transition().duration(state.playing ? 900 : 650).ease(d3.easeCubicInOut);
+
+  /* ---------------- render ---------------- */
+  let svg, lastView = null;
+  function render(viewChanged) {
+    const r = rows();
+    renderPage(r); header(r);
+    const W = chart.clientWidth, H = chart.clientHeight;
+    svg = d3.select(chart).selectAll("svg").data([0]).join("svg").attr("width", W).attr("height", H);
+    if (viewChanged || lastView !== state.view) { svg.selectAll("*").interrupt().remove(); lastView = state.view; }
+    ({ gap: drawGap, bump: drawBump, gauges: drawGauges, radar: drawRadar, swarm: drawSwarm, map: drawMap })[state.view](r, W, H);
+  }
+  const layer = cls => svg.selectAll("g." + cls).data([0]).join(en => en.append("g").classed(cls, true));
+
+  // 1. Gap race
+  function drawGap(r, W, H) {
+    const m = { l: 116, r: 44, t: 6, b: 22 }, x = d3.scaleLinear().domain([0, 70]).range([m.l, W - m.r]);
+    const y = d3.scaleBand().domain(ordered(r).map(d => d.c)).range([m.t, H - m.b]).padding(.3);
+    const ax = layer("axis");
+    ax.selectAll("line").data(d3.range(0, 71, 10)).join("line").attr("x1", x).attr("x2", x).attr("y1", m.t).attr("y2", H - m.b).attr("stroke", C.grid);
+    ax.selectAll("text").data(d3.range(0, 71, 10)).join(en => en.append("text").classed("tk", true)).attr("x", x).attr("y", H - 5).attr("text-anchor", "middle").text(d => d + "%");
+    const yy = d => y(d.c) + y.bandwidth() / 2 + 5;
+    const g = svg.selectAll("g.row").data(r, d => d.c).join(enter => {
+      const e = enter.append("g").classed("row", true).attr("transform", d => `translate(0,${yy(d)})`);
+      e.append("rect").attr("x", 0).attr("y", -14).attr("height", 22).attr("fill", "transparent");
+      e.append("text").classed("nm", true).attr("y", 3.5).attr("text-anchor", "end");
+      e.append("line").classed("bar", true).attr("stroke", "#e3e7ec").attr("stroke-width", 6).attr("stroke-linecap", "round").attr("x1", x(0)).attr("x2", x(0));
+      e.append("text").classed("gl", true).attr("y", -8).attr("text-anchor", "middle").attr("x", x(0));
+      e.append("circle").classed("eb", true).attr("r", 6.5).attr("fill", C.ebook).attr("cx", x(0));
+      e.append("circle").classed("pr", true).attr("r", 6.5).attr("fill", C.print).attr("cx", x(0));
+      e.append("text").classed("val ve", true).attr("y", 3.5).attr("x", x(0));
+      e.append("text").classed("val vp", true).attr("y", 3.5).attr("x", x(0));
+      return e;
+    });
+    g.call(interact);
+    const t = T(), left = d => d.ebook <= d.print;
+    g.transition(t).attr("transform", d => `translate(0,${yy(d)})`);
+    g.select("rect").attr("width", W);
+    g.select("text.nm").attr("x", m.l - 14).text(d => d.c);
+    g.select("line.bar").transition(t).attr("x1", d => x(d.ebook)).attr("x2", d => x(d.print));
+    g.select("text.gl").text(d => (d.gap >= 0 ? "+" : "−") + f1(Math.abs(d.gap)) + " pts").transition(t).attr("x", d => x((d.print + d.ebook) / 2));
+    g.select("circle.eb").transition(t).attr("cx", d => x(d.ebook));
+    g.select("circle.pr").transition(t).attr("cx", d => x(d.print));
+    g.select("text.ve").attr("text-anchor", d => left(d) ? "end" : "start").text(d => pct(d.ebook)).transition(t).attr("x", d => x(d.ebook) + (left(d) ? -10 : 10));
+    g.select("text.vp").attr("text-anchor", d => left(d) ? "start" : "end").text(d => pct(d.print)).transition(t).attr("x", d => x(d.print) + (left(d) ? 10 : -10));
+  }
+
+  // 2. Rank bump: four measures
+  function drawBump(r, W, H) {
+    const cols = [{ k: "print", n: "Print share" }, { k: "ebook", n: "E-book share" }, { k: "gap", n: "Print lead" }, { k: "ratio", n: "Closest to parity" }];
+    const m = { l: 120, r: 112, t: 26, b: 8 };
+    const x = d3.scalePoint().domain(cols.map(c => c.k)).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([1, r.length]).range([m.t + 6, H - m.b - 6]);
+    const shade = d3.scaleLinear().domain([1, r.length]).range(["#0d4f80", "#a7cbe8"]).interpolate(d3.interpolateRgb);
+    const ax = layer("axis");
+    ax.selectAll("text.hd").data(cols, d => d.k).join(en => en.append("text").classed("hd", true)).attr("x", d => x(d.k)).attr("y", 12).attr("text-anchor", "middle").text(d => d.n);
+    ax.selectAll("line.cg").data(cols, d => d.k).join(en => en.append("line").classed("cg", true)).attr("x1", d => x(d.k)).attr("x2", d => x(d.k)).attr("y1", y(1)).attr("y2", y(r.length)).attr("stroke", C.grid).attr("stroke-dasharray", "2 3");
+    ax.selectAll("text.tk").data(d3.range(1, r.length + 1)).join(en => en.append("text").classed("tk", true)).attr("x", 10).attr("y", d => y(d) + 3).text(d => d);
+    const line = d3.line().curve(d3.curveBumpX);
+    const g = svg.selectAll("g.line").data(r, d => d.c).join(enter => {
+      const e = enter.append("g").classed("line", true);
+      e.append("path").classed("bp", true).attr("fill", "none");
+      e.append("text").classed("nm nl", true).attr("text-anchor", "end");
+      e.append("text").classed("nm nr", true);
+      return e;
+    });
+    g.call(interact);
+    if (state.selected) g.filter(d => d.c === state.selected).raise();
+    const t = T(), pts = d => cols.map(c => [x(c.k), y(d["rank_" + c.k])]);
+    const col = d => d.c === state.selected ? C.print : shade(d.rank_print);
+    g.select("path.bp").attr("stroke", col).attr("stroke-width", d => d.c === state.selected ? 4 : 2.8).transition(t).attr("d", d => line(pts(d)));
+    g.selectAll("circle").data(d => cols.map(c => ({ row: d, c })), o => o.c.k)
+      .join(en => en.append("circle").attr("r", 4.6))
+      .attr("fill", o => col(o.row)).transition(t).attr("cx", o => x(o.c.k)).attr("cy", o => y(o.row["rank_" + o.c.k]));
+    g.select("text.nl").transition(t).attr("x", x("print") - 10).attr("y", d => y(d.rank_print) + 3.5).text(d => d.s);
+    g.select("text.nr").transition(t).attr("x", x("ratio") + 10).attr("y", d => y(d.rank_ratio) + 3.5).text(d => `${d.s} · ${f1(d.ratio)}`);
+  }
+
+  // 3. Parity gauges: segmented dials, ten segments = parity
+  function drawGauges(r, W, H) {
+    const cols = 5, cw = W / cols, ch = H / 2, R = Math.min(cw * .38, ch * .34);
+    const a = d3.scaleLinear().domain([0, 10]).range([-Math.PI / 2, Math.PI / 2]).clamp(true);
+    const arc = d3.arc().innerRadius(R * .6).outerRadius(R).padAngle(.06).cornerRadius(2.5);
+    const order = ordered(r).map(d => d.c);
+    const pos = d => { const i = order.indexOf(d.c); return [cw * (i % cols) + cw / 2, ch * Math.floor(i / cols) + 32 + R]; };
+    const g = svg.selectAll("g.dial").data(r, d => d.c).join(enter => {
+      const e = enter.append("g").classed("dial", true).attr("transform", d => `translate(${pos(d)})`);
+      e.append("rect").attr("x", -cw / 2).attr("y", -R - 32).attr("width", cw).attr("height", ch).attr("fill", "transparent");
+      e.append("text").classed("nm gn", true).attr("y", -R - 13).attr("text-anchor", "middle");
+      e.selectAll("path.sg").data(d3.range(10)).join("path").classed("sg", true).attr("d", i => arc({ startAngle: a(i), endAngle: a(i + 1) })).attr("fill", C.track);
+      e.append("line").classed("needle", true).attr("stroke", C.ink).attr("stroke-width", 2.4).attr("stroke-linecap", "round").attr("y2", -R * .78).attr("transform", "rotate(-90)");
+      e.append("circle").attr("r", 4).attr("fill", C.ink);
+      e.append("text").classed("tk", true).attr("x", -R * .8).attr("y", 13).attr("text-anchor", "middle").text("0");
+      e.append("text").classed("tk", true).attr("x", R * .8).attr("y", 13).attr("text-anchor", "middle").text("10");
+      e.append("text").classed("gnum gv", true).attr("y", 25).attr("text-anchor", "middle");
+      e.append("text").classed("cap gs", true).attr("y", 39).attr("text-anchor", "middle");
+      return e;
+    });
+    g.call(interact);
+    const t = T();
+    g.transition(t).attr("transform", d => `translate(${pos(d)})`);
+    g.select("text.gn").text(d => d.s);
+    g.selectAll("path.sg").data(d => d3.range(10).map(i => ({ i, on: i < d.ratio })))
+      .transition(t).delay(o => o.i * 25).attr("fill", o => o.on ? C.ebook : C.track);
+    g.select("line.needle").transition(t).attr("transform", d => `rotate(${a(d.ratio) * 180 / Math.PI})`);
+    g.select("text.gv").text(d => f1(d.ratio));
+    g.select("text.gs").text(d => d.ratio >= 10 ? "AT PARITY" : `${f1(10 - d.ratio)} SHORT`);
+  }
+
+  // 4. Radar
+  function drawRadar(r, W, H) {
+    const cx = W / 2, cy = H / 2 + 4, R = Math.min(W / 2 - 74, H / 2 - 20);
+    const byPrint = [...r].sort((p, q) => q.print - p.print);
+    const ang = d3.scalePoint().domain(byPrint.map(d => d.c)).range([0, 2 * Math.PI * (1 - 1 / r.length)]);
+    const rad = d3.scaleLinear().domain([0, 60]).range([0, R]);
+    const at = (t, v) => [cx + Math.sin(t) * rad(v), cy - Math.cos(t) * rad(v)], pt = (c, v) => at(ang(c), v);
+    const ax = layer("axis"), mid = Math.PI / r.length;
+    ax.selectAll("circle").data([15, 30, 45, 60]).join("circle").attr("cx", cx).attr("cy", cy).attr("r", rad).attr("fill", "none").attr("stroke", C.grid);
+    ax.selectAll("text").data([15, 30, 45, 60]).join(en => en.append("text").classed("tk", true)).attr("x", d => at(mid, d)[0] + 3).attr("y", d => at(mid, d)[1]).text(d => d + "%");
+    const sp = svg.selectAll("g.ax").data(r, d => d.c).join(enter => {
+      const e = enter.append("g").classed("ax", true); e.append("line").attr("stroke", C.grid); e.append("text").classed("nm", true); return e; });
+    sp.select("line").transition(T()).attr("x1", cx).attr("y1", cy).attr("x2", d => pt(d.c, 60)[0]).attr("y2", d => pt(d.c, 60)[1]);
+    sp.select("text").text(d => d.s).attr("text-anchor", d => { const s = Math.sin(ang(d.c)); return s > .2 ? "start" : s < -.2 ? "end" : "middle"; })
+      .transition(T()).attr("x", d => pt(d.c, 65)[0]).attr("y", d => pt(d.c, 65)[1] + 4);
+    sp.classed("dim", d => !!state.selected && d.c !== state.selected);
+    const series = [{ k: "print", col: C.print }, { k: "ebook", col: C.ebook }];
+    const ring = k => d3.line()(byPrint.map(d => pt(d.c, d[k]))) + "Z";
+    svg.selectAll("path.poly").data(series, s => s.k)
+      .join(en => en.append("path").classed("poly", true).attr("fill-opacity", .17).attr("stroke-width", 2.4).attr("d", d3.line()(r.map(() => [cx, cy])) + "Z"))
+      .attr("fill", s => s.col).attr("stroke", s => s.col).transition(T()).attr("d", s => ring(s.k));
+    const dots = svg.selectAll("g.rd").data(r, d => d.c).join(en => {
+      const e = en.append("g").classed("rd", true);
+      e.append("circle").classed("rp", true).attr("r", 4).attr("fill", C.print).attr("cx", cx).attr("cy", cy);
+      e.append("circle").classed("re", true).attr("r", 4).attr("fill", C.ebook).attr("cx", cx).attr("cy", cy); return e; });
+    dots.call(interact);
+    dots.select("circle.rp").transition(T()).attr("cx", d => pt(d.c, d.print)[0]).attr("cy", d => pt(d.c, d.print)[1]);
+    dots.select("circle.re").transition(T()).attr("cx", d => pt(d.c, d.ebook)[0]).attr("cy", d => pt(d.c, d.ebook)[1]);
+  }
+
+  // 5. Beeswarm: one row per format on a shared axis
+  function drawSwarm(r, W, H) {
+    const x = d3.scaleLinear().domain([0, 60]).range([96, W - 16]);
+    const rowsY = { print: H * .36, ebook: H * .73 }, R = 12.5;
+    const ax = layer("axis");
+    ax.selectAll("line").data(d3.range(0, 61, 10)).join("line").attr("x1", x).attr("x2", x).attr("y1", H * .17).attr("y2", H - 22).attr("stroke", C.grid);
+    ax.selectAll("text.tk").data(d3.range(0, 61, 10)).join(en => en.append("text").classed("tk", true)).attr("x", x).attr("y", H - 6).attr("text-anchor", "middle").text(d => d + "%");
+    ax.selectAll("text.hd").data([["print", "Printed", C.print], ["ebook", "E-books", C.ebook]]).join(en => en.append("text").classed("hd", true))
+      .attr("x", 14).attr("y", d => rowsY[d[0]] + 3).style("fill", d => d[2]).text(d => d[1]);
+    const nodes = r.flatMap(d => ["print", "ebook"].map(f => ({ k: d.c + "|" + f, f, row: d, v: d[f], x: x(d[f]), y: rowsY[f] })));
+    const sim = d3.forceSimulation(nodes).stop().force("x", d3.forceX(d => x(d.v)).strength(1)).force("y", d3.forceY(d => rowsY[d.f]).strength(.12)).force("c", d3.forceCollide(R + 1.5).iterations(4));
+    for (let i = 0; i < 200; i++) sim.tick();
+    const means = [["print", avg(r, "print"), C.print], ["ebook", avg(r, "ebook"), C.ebook]];
+    const av = svg.selectAll("g.avg").data(means, d => d[0]).join(en => {
+      const e = en.append("g").classed("avg", true); e.append("line").attr("stroke-dasharray", "3 3").attr("stroke-width", 1.2); e.append("text").classed("gl", true); return e; });
+    av.select("line").attr("stroke", d => d[2]).attr("y1", d => rowsY[d[0]] - 46).attr("y2", d => rowsY[d[0]] + 38).transition(T()).attr("x1", d => x(d[1])).attr("x2", d => x(d[1]));
+    av.select("text").style("fill", d => d[2]).attr("y", d => rowsY[d[0]] - 49).text(d => "avg " + pct(d[1])).transition(T()).attr("x", d => x(d[1]) + 4);
+    const g = svg.selectAll("g.bee").data(nodes, d => d.k).join(enter => {
+      const e = enter.append("g").classed("bee", true).attr("transform", d => `translate(${x(d.v)},${rowsY[d.f]})`);
+      e.append("circle").attr("r", R);
+      e.append("text").classed("code", true).attr("text-anchor", "middle").attr("y", 2.8);
+      return e;
+    });
+    g.call(interact);
+    g.select("circle").attr("fill", d => d.f === "print" ? C.print : C.ebook)
+      .attr("stroke", d => d.row.c === state.selected ? C.ink : "#fff").attr("stroke-width", d => d.row.c === state.selected ? 2 : 1.5);
+    g.select("text").text(d => d.row.code);
+    g.transition(T()).attr("transform", d => `translate(${d.x},${d.y})`);
+  }
+
+  // 6. Distance map: print share vs e-book share on one scale (0-65%), rays from zero, parity diagonal
+  const MAP_LABEL = { China: "nw", "United States": "n", "United Kingdom": "ne", "South Korea": "nw", Japan: "nw",
+                      Australia: "s", Spain: "ne", Germany: "e", India: "e", France: "se" };   // mockup placement; others fall back
+  function drawMap(r, W, H) {
+    const ox = 58, oy = H - 32, MAX = 65;
+    const x = d3.scaleLinear().domain([0, MAX]).range([ox, W - 10]), y = d3.scaleLinear().domain([0, MAX]).range([oy, 8]);
+    const ax = layer("axis"), above = r.filter(d => d.ebook >= d.print).length;
+    const one = (cls, tag = "text") => ax.selectAll(tag + "." + cls).data([0]).join(en => en.append(tag).classed(cls, true));
+    one("zone", "path").attr("d", "M" + x(0) + "," + y(0) + "L" + x(0) + "," + y(MAX) + "L" + x(MAX) + "," + y(MAX) + "Z").attr("fill", C.zone);
+    ax.selectAll("line.gx").data(d3.range(10, 61, 10)).join(en => en.append("line").classed("gx", true)).attr("x1", x).attr("x2", x).attr("y1", y(0)).attr("y2", y(MAX)).attr("stroke", "#eef1f3");
+    ax.selectAll("line.gy").data(d3.range(10, 61, 10)).join(en => en.append("line").classed("gy", true)).attr("y1", y).attr("y2", y).attr("x1", x(0)).attr("x2", x(MAX)).attr("stroke", "#eef1f3");
+    ax.selectAll("text.tx").data(d3.range(0, 61, 10)).join(en => en.append("text").classed("tk tx", true)).attr("x", x).attr("y", oy + 13).attr("text-anchor", "middle").text(d => d + "%");
+    ax.selectAll("text.ty").data(d3.range(0, 61, 10)).join(en => en.append("text").classed("tk ty", true)).attr("x", ox - 8).attr("y", d => y(d) + 3).attr("text-anchor", "end").text(d => d + "%");
+    one("par", "line").attr("x1", x(0)).attr("y1", y(0)).attr("x2", x(MAX)).attr("y2", y(MAX)).attr("stroke", C.ink).attr("stroke-width", 1.3);
+    const slope = Math.atan2(y(MAX) - y(0), x(MAX) - x(0)) * 180 / Math.PI;
+    one("hd").attr("transform", "translate(" + (x(56) - 4) + "," + (y(56) - 6) + ") rotate(" + slope + ")").attr("text-anchor", "middle").text("Parity");
+    one("zt").attr("x", x(4)).attr("y", y(59)).text("E-book majority zone");
+    one("zs").attr("x", x(4)).attr("y", y(59) + 14).text((above ? above + " market" + (above > 1 ? "s are" : " is") : "No market is") + " here");
+    const st = [...r].sort((p, q) => q.ratio - p.ratio);
+    const how = ["Each ray runs from zero to a market. The steeper", "the ray, the closer that market is to parity.",
+                 st[0].s + "'s ray is steepest; " + st[st.length - 1].s + "'s is flattest.", "", "Drag the scenario slider to see how far", "e-book adoption would have to rise."];
+    const hw = one("how", "g").attr("transform", "translate(" + x(4) + "," + (y(59) + 42) + ")");
+    hw.selectAll("text").data(["How to read it", ...how]).join("text").attr("y", (d, i) => i * 15)
+      .attr("class", (d, i) => i ? "zs" : "nm").text(d => d);
+    one("at1").classed("tk", true).attr("x", x(MAX)).attr("y", oy + 28).attr("text-anchor", "end").text("Print share →");
+    one("at2").classed("tk", true).attr("transform", "translate(" + (ox - 34) + "," + y(MAX) + ") rotate(-90)").attr("text-anchor", "end").text("E-book share →");
+    // labels: preferred side per market, then any free side (never over a point or an earlier label)
+    const OFF = { e: [10, 4, "start"], w: [-10, 4, "end"], n: [0, -11, "middle"], s: [0, 18, "middle"], ne: [7, -9, "start"], nw: [-7, -9, "end"], se: [7, 17, "start"], sw: [-7, 17, "end"] };
+    const box = (px, py, k, w) => { const [dx, dy, an] = OFF[k], x0 = an === "start" ? px + dx : an === "end" ? px + dx - w : px + dx - w / 2; return { x0, x1: x0 + w, y0: py + dy - 10, y1: py + dy + 2 }; };
+    const boxes = r.map(d => ({ x0: x(d.print) - 7, x1: x(d.print) + 7, y0: y(d.ebook) - 7, y1: y(d.ebook) + 7 }));
+    const hit = b => boxes.some(o => b.x0 < o.x1 && b.x1 > o.x0 && b.y0 < o.y1 && b.y1 > o.y0);
+    const lab = new Map();
+    for (const d of [...r].sort((p, q) => q.ebook - p.ebook)) {
+      const px = x(d.print), py = y(d.ebook), w = d.s.length * 5.9 + 2;
+      const order = [MAP_LABEL[d.c] || "e", "e", "ne", "n", "nw", "w", "se", "s", "sw"];
+      let k = order[0];
+      for (const c of order) { if (!hit(box(px, py, c, w))) { k = c; break; } }
+      boxes.push(box(px, py, k, w)); lab.set(d.c, [px + OFF[k][0], py + OFF[k][1], OFF[k][2]]);
+    }
+    const g = svg.selectAll("g.pt").data(r, d => d.c).join(enter => {
+      const e = enter.append("g").classed("pt", true);
+      e.append("line").classed("ray", true).attr("stroke-width", 1).attr("x1", x(0)).attr("y1", y(0)).attr("x2", x(0)).attr("y2", y(0));
+      e.append("circle").attr("r", 6.5).attr("fill", C.print).attr("cx", x(0)).attr("cy", y(0));
+      e.append("text").classed("nm", true).attr("x", x(0)).attr("y", y(0));
+      return e;
+    });
+    g.call(interact);
+    const t = T();
+    g.select("line.ray").attr("stroke", d => d.c === state.selected ? C.print : "#b4cbe0").transition(t).attr("x2", d => x(d.print)).attr("y2", d => y(d.ebook));
+    g.select("circle").transition(t).attr("cx", d => x(d.print)).attr("cy", d => y(d.ebook));
+    g.select("text").text(d => d.s).attr("text-anchor", d => lab.get(d.c)[2]).transition(t).attr("x", d => lab.get(d.c)[0]).attr("y", d => lab.get(d.c)[1]);
+  }
+
+  /* ---------------- data loading (Extensions API, preview fallback) ---------------- */
+  const srcEl = document.getElementById("src"), errEl = document.getElementById("err");
+  function setStatus(msg, live) { srcEl.textContent = "· " + msg; srcEl.classList.toggle("live", !!live); }
+  function showError(msg) { errEl.textContent = msg; errEl.style.display = msg ? "flex" : "none"; }
+  async function loadLive() {
+    const dash = tableau.extensions.dashboardContent.dashboard;
+    const ws = dash.worksheets.find(w => w.name === FEED_SHEET);
+    if (!ws) throw new Error(`Feed sheet "${FEED_SHEET}" is not on this dashboard.\nSheets found: ${dash.worksheets.map(w => w.name).join(", ") || "(none)"}`);
+    const tbl = await ws.getSummaryDataAsync({ ignoreSelection: true });
+    const names = tbl.columns.map(c => c.fieldName), idx = {};
+    for (const [k, f] of Object.entries(FIELDS)) { idx[k] = names.indexOf(f); if (idx[k] < 0) throw new Error(`Field "${f}" not found on "${FEED_SHEET}".\nExpected: ${Object.values(FIELDS).join(", ")}\nFound: ${names.join(", ")}`); }
+    const by = new Map();
+    for (const row of tbl.data) {
+      const c = row[idx.country].value, f = String(row[idx.format].value), raw = +row[idx.share].value, v = Math.abs(raw) <= 1 ? raw * 100 : raw;
+      if (!by.has(c)) by.set(c, { c, print: NaN, ebook: NaN });
+      if (/print/i.test(f)) by.get(c).print = v; else if (/e-?book/i.test(f)) by.get(c).ebook = v;
+    }
+    const out = [...by.values()].filter(d => isFinite(d.print) && isFinite(d.ebook));
+    if (!out.length) throw new Error(`No rows with both "Printed books" and "E-books" on "${FEED_SHEET}".`);
+    return out;
+  }
+  async function refresh() {
+    try { state.base = await loadLive(); state.live = true; showError(""); setStatus(`Live data · ${FEED_SHEET}`, true); render(true); }
+    catch (e) { setStatus("Data error"); showError("Could not load data: " + e.message); }
+  }
+  const inTableau = window.parent !== window && window.tableau && tableau.extensions;
+  if (inTableau) {
+    setStatus("Connecting…");
+    tableau.extensions.initializeAsync().then(() => {
+      const ws = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === FEED_SHEET);
+      if (ws) ws.addEventListener(tableau.TableauEventType.SummaryDataChanged, refresh);
+      refresh();
+    }, e => { setStatus("Data error"); showError("Extensions API failed to initialise: " + e.message); });
+  } else {
+    setStatus("Preview data");
+    render(true);
+  }
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => render(true), 120); });
+
+  /* ---------------- self-test (?selftest=1): every view renders; mark counts stable after 20 slider/order changes ---------------- */
+  if (/selftest=1/.test(location.search)) {
+    const MARKS = { gap: ["g.row", 1], bump: ["g.line", 1], gauges: ["g.dial", 1], radar: ["g.rd", 1], swarm: ["g.bee", 2], map: ["g.pt", 1] };
+    (async () => {
+      const out = { views: {}, errors: ERRORS, pageHeight: document.documentElement.scrollHeight };
+      for (const v of VIEWS) {
+        state.view = v.id; render(true);
+        const [sel, mult] = MARKS[v.id], expected = state.base.length * mult, before = svg.selectAll(sel).size();
+        for (let i = 0; i < 20; i++) { state.scenario = (i * 7) % 16; state.order = ["gap", "print", "ebook", "ratio", "az"][i % 5]; render(false); }
+        const after = svg.selectAll(sel).size();
+        const extra = v.id === "gauges" ? svg.selectAll("path.sg").size() === state.base.length * 10 : v.id === "radar" ? svg.selectAll("path.poly").size() === 2 : true;
+        out.views[v.id] = { before, after, expected, ok: before === expected && after === expected && extra };
+      }
+      state.scenario = 0; state.order = "gap"; state.view = "gap"; render(true);
+      out.pass = Object.values(out.views).every(v => v.ok) && !ERRORS.length;
+      const pre = document.getElementById("selftest"); pre.textContent = JSON.stringify(out); pre.style.display = "block";
+      document.title = out.pass ? "SELFTEST PASS" : "SELFTEST FAIL";
+    })();
+  }
+})();
+</script>
+</body>
+</html>
