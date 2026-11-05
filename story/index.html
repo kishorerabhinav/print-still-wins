@@ -232,7 +232,7 @@
   let FIT = 1;   // page scale, set by fit()
   const STANDALONE = window.parent === window && !/zone=1/.test(location.search);   // opened directly in a browser
   if (STANDALONE) document.documentElement.classList.add("standalone");
-  const state = { view: "gap", order: "gap", selected: "", scenario: 0, base: PREVIEW, live: false, playing: false, step: 0 };
+  const state = { view: "gauges", order: "gap", selected: "", scenario: 0, base: PREVIEW, live: false, playing: false, step: 0 };
   { const q = new URLSearchParams(location.search);   // deep links: ?view=radar&spot=China&scenario=5&order=ratio
     if (VIEWS.some(v => v.id === q.get("view"))) state.view = q.get("view");
     if (q.get("spot")) state.selected = q.get("spot");
@@ -678,7 +678,7 @@
         const extra = v.id === "gauges" ? svg.selectAll("path.sg").size() === state.base.length * 10 : v.id === "radar" ? svg.selectAll("path.poly").size() === 2 : true;
         out.views[v.id] = { before, after, expected, ok: before === expected && after === expected && extra };
       }
-      state.scenario = 0; state.order = "gap"; state.view = "gap"; render(true);
+      state.scenario = 0; state.order = "gap"; state.view = "gauges"; render(true);
       out.pass = Object.values(out.views).every(v => v.ok) && !ERRORS.length;
       const pre = document.getElementById("selftest"); pre.textContent = JSON.stringify(out); pre.style.display = "block";
       document.title = out.pass ? "SELFTEST PASS" : "SELFTEST FAIL";
