@@ -59,7 +59,7 @@
   .stage { background: var(--bg2); padding: 14px 0 6px; }
   .grid { display: flex; gap: 12px; align-items: stretch; }
   .card { background: #fff; border: 1px solid var(--rule); border-radius: 6px; }
-  .main { flex: 1; min-width: 0; padding: 14px 16px 10px; display: flex; flex-direction: column; height: 448px; }
+  .main { flex: 1; min-width: 0; padding: 14px 16px 10px; display: flex; flex-direction: column; height: 560px; }
   .chead { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex: none; }
   h2 { font: 700 17px/1.2 var(--serif); margin: 0; }
   .sub { font-size: 10.5px; color: var(--ink3); margin: 4px 0 0; }
@@ -459,14 +459,14 @@
 
   // 3. Parity gauges: segmented dials, ten segments = parity
   function drawGauges(r, W, H) {
-    const cols = 5, cw = W / cols, ch = H / 2, R = Math.min(cw * .38, ch * .34);
+    const cols = 5, cw = W / cols, ch = H / 2, R = Math.min(cw * .4, ch * .34);
     const a = d3.scaleLinear().domain([0, 10]).range([-Math.PI / 2, Math.PI / 2]).clamp(true);
     const arc = d3.arc().innerRadius(R * .6).outerRadius(R).padAngle(.06).cornerRadius(2.5);
     const order = ordered(r).map(d => d.c);
-    const pos = d => { const i = order.indexOf(d.c); return [cw * (i % cols) + cw / 2, ch * Math.floor(i / cols) + 32 + R]; };
+    const pos = d => { const i = order.indexOf(d.c); return [cw * (i % cols) + cw / 2, ch * Math.floor(i / cols) + ch / 2 + R * .3]; };
     const g = svg.selectAll("g.dial").data(r, d => d.c).join(enter => {
       const e = enter.append("g").classed("dial", true).attr("transform", d => `translate(${pos(d)})`);
-      e.append("rect").attr("x", -cw / 2).attr("y", -R - 32).attr("width", cw).attr("height", ch).attr("fill", "transparent");
+      e.append("rect").attr("x", -cw / 2).attr("y", -ch / 2 - R * .3).attr("width", cw).attr("height", ch).attr("fill", "transparent");
       e.append("text").classed("nm gn", true).attr("y", -R - 13).attr("text-anchor", "middle");
       e.selectAll("path.sg").data(d3.range(10)).join("path").classed("sg", true).attr("d", i => arc({ startAngle: a(i), endAngle: a(i + 1) })).attr("fill", C.track);
       e.append("line").classed("needle", true).attr("stroke", C.ink).attr("stroke-width", 2.4).attr("stroke-linecap", "round").attr("y2", -R * .78).attr("transform", "rotate(-90)");
@@ -651,7 +651,7 @@
   if (/selftest=1/.test(location.search)) {
     const MARKS = { gap: ["g.row", 1], bump: ["g.line", 1], gauges: ["g.dial", 1], radar: ["g.rd", 1], swarm: ["g.bee", 2], map: ["g.pt", 1] };
     (async () => {
-      const out = { views: {}, errors: ERRORS, pageHeight: document.documentElement.scrollHeight };
+      const out = { views: {}, errors: ERRORS, pageHeight: document.getElementById("page").offsetHeight };
       for (const v of VIEWS) {
         state.view = v.id; render(true);
         const [sel, mult] = MARKS[v.id], expected = state.base.length * mult, before = svg.selectAll(sel).size();
