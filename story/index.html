@@ -604,7 +604,7 @@
 
   /* ---------------- data loading (Extensions API, preview fallback) ---------------- */
   const srcEl = document.getElementById("src"), errEl = document.getElementById("err");
-  function setStatus(msg, live) { srcEl.textContent = "· " + msg; srcEl.classList.toggle("live", !!live); }
+  function setStatus(msg, live) { srcEl.textContent = msg ? "· " + msg : ""; srcEl.classList.toggle("live", !!live); }   // empty when live: nothing to show viewers
   function showError(msg) { errEl.textContent = msg; errEl.style.display = msg ? "flex" : "none"; }
   async function loadLive() {
     const dash = tableau.extensions.dashboardContent.dashboard;
@@ -624,13 +624,13 @@
     return out;
   }
   async function refresh() {
-    try { state.base = await loadLive(); state.live = true; showError(""); setStatus(`Live data · ${FEED_SHEET}`, true); render(true); }
+    try { state.base = await loadLive(); state.live = true; showError(""); setStatus("", true); render(true); }
     catch (e) { setStatus("Data error"); showError("Could not load data: " + e.message); }
   }
   fit();
   const inTableau = window.parent !== window && window.tableau && tableau.extensions && !/preview=1/.test(location.search);
   if (inTableau) {
-    setStatus("Connecting…");
+    setStatus("");
     tableau.extensions.initializeAsync().then(() => {
       const ws = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === FEED_SHEET);
       if (ws) ws.addEventListener(tableau.TableauEventType.SummaryDataChanged, refresh);
